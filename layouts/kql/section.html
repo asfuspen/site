@@ -16,13 +16,13 @@
     <div class="kql-list">
       {{ range hugo.Data.kql }}
       {{ $t := cond $en (.title_en | default .titulo) .titulo }}{{ $d := cond $en (.desc_en | default .descricao) .descricao }}
-      <article class="kql reveal" id="{{ .id }}" data-prod="{{ .produto }}" data-text="{{ printf "%s %s %s %s %s" $t $d .produto .tabela (delimit (.tags | default slice) " ") | lower }}">
+      <article class="kql reveal" id="{{ .id }}" data-prod="{{ .produto }}" data-text="{{ printf "%s %s %s %s %s" $t $d .produto .tabela (delimit (.tags | default slice) " ") | lower }}{{ range .mitre }} {{ .tecnica | lower }} {{ .nome | lower }}{{ end }}">
         <header>
           <div>
             <h2><a href="#{{ .id }}">{{ $t }}</a></h2>
             <p class="muted">{{ $d }}</p>
           </div>
-          <p class="mono kql-meta"><span class="tag-cat">{{ .produto }}</span><span>{{ T "kql_table" }}: {{ .tabela }}</span></p>
+          <p class="mono kql-meta"><span class="tag-cat">{{ .produto }}</span><span>{{ T "kql_table" }}: {{ .tabela }}</span>{{ range .mitre }}<a class="tech" href="https://attack.mitre.org/techniques/{{ replace .tecnica "." "/" }}/" target="_blank" rel="noopener" title="{{ .nome }}">{{ .tecnica }}</a>{{ end }}</p>
         </header>
         <div class="prose">{{ highlight (strings.TrimSpace .query) "kusto" "" }}</div>
       </article>

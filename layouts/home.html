@@ -33,7 +33,11 @@
         {{ end }}
         <p class="cmd"><span class="ps">$</span> <span data-type>wc -l kql/*.kql</span></p>
         <p class="out"><a href="{{ "kql/" | relLangURL }}">{{ $nk }} {{ T "stat_kql" }}</a></p>
-        <p class="cmd"><span class="ps">$</span> <span class="caret"></span></p>
+        <p class="out tip">{{ T "terminal_tip" }}</p>
+        <form class="cmd term-form" data-term-form data-who="{{ site.Params.author }}, {{ site.Params.headline | lower }}" autocomplete="off">
+          <label class="ps" for="term-in">$</label>
+          <input id="term-in" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="{{ T "terminal_input" }}" placeholder="help">
+        </form>
       </div>
     </div>
   </div>
@@ -100,6 +104,27 @@
       <pre class="mono" aria-hidden="true"><code>{{ .query }}</code></pre>
       {{ end }}
     </div>
+  </div>
+</section>
+{{ end }}
+
+{{ $mitems := partial "mitre-items.html" . }}
+{{ if $mitems }}
+<section class="block">
+  <div class="wrap">
+    <div class="block-head">
+      <div>
+        <p class="eyebrow mono">{{ T "eyebrow_mitre" }}</p>
+        <h2>{{ T "mitre_teaser_title" }}</h2>
+      </div>
+      <a class="more" href="{{ "mitre/" | relLangURL }}">{{ T "mitre_open" }} {{ partial "icon.html" "arrow" }}</a>
+    </div>
+    <a class="mitre-strip reveal" href="{{ "mitre/" | relLangURL }}" aria-label="{{ T "mitre_open" }}">
+      {{ range hugo.Data.mitre }}
+      {{ $n := len (where $mitems "tatica" .id) }}
+      <span class="cell{{ if $n }} on{{ end }}" title="{{ index . site.Language.Lang | default .pt }}"><i style="--n: {{ $n }}"></i><b class="mono">{{ $n }}</b><em>{{ index . site.Language.Lang | default .pt }}</em></span>
+      {{ end }}
+    </a>
   </div>
 </section>
 {{ end }}

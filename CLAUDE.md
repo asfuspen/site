@@ -5,9 +5,9 @@ Site pessoal de Alessandro Ferreira sobre cibersegurança, em português do Bras
 ## Regras para posts
 
 - Cada post fica em `content/posts/<slug>/index.md`, com slug em minúsculas, sem acentos e com hífens.
-- Front matter obrigatório: `title`, `date`, `draft`, `description`, `summary`, `categories`, `tags`, `nivel` (`iniciante`, `intermediario` ou `avancado`). Opcionais: `series: ["Nome da série"]` para posts em sequência e `featured: true` para destacar na página inicial.
+- Front matter obrigatório: `title`, `date`, `draft`, `description`, `summary`, `categories`, `tags`, `nivel` (`iniciante`, `intermediario` ou `avancado`). Opcionais: `mitre` para o mapa ATT&CK, no formato `- { tatica: "TA0006", tecnica: "T1110.003", nome: "Password Spraying" }` com identificadores e nomes oficiais conferidos em attack.mitre.org; `series: ["Nome da série"]` para posts em sequência e `featured: true` para destacar na página inicial.
 - O site é bilíngue. Todo post tem a versão em português em `index.md` e a tradução em inglês em `index.en.md`, na mesma pasta, com o mesmo `date`, `nivel` e código. Traduza título, descrição, resumo, categorias, tags e texto.
-- Consultas KQL reutilizáveis também entram em `data/kql.yaml` (campos `id`, `titulo`, `title_en`, `descricao`, `desc_en`, `produto`, `tabela`, `tags`, `query`). Só inclua tabelas e colunas confirmadas na documentação oficial.
+- Consultas KQL reutilizáveis também entram em `data/kql.yaml` (campos `id`, `titulo`, `title_en`, `descricao`, `desc_en`, `produto`, `tabela`, `tags`, `mitre`, `query`). Só inclua tabelas e colunas confirmadas na documentação oficial.
 - Posts novos entram sempre por pull request, nunca direto na `main`. O Alessandro revisa e aprova antes de publicar.
 - Escreva em português do Brasil, em tom técnico e direto, para profissionais de TI e segurança.
 - Foco no ecossistema de segurança da Microsoft: Defender XDR, Sentinel, Entra ID, Purview, Intune, Azure. Temas gerais de segurança são bem-vindos quando têm aplicação prática.

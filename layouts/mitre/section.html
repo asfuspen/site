@@ -1,0 +1,47 @@
+{{ define "main" }}
+{{ partial "pagehead.html" (dict "eyebrow" "// mitre att&ck" "title" .Title "lead" .Content) }}
+{{ $items := partial "mitre-items.html" . }}
+{{ $lang := site.Language.Lang }}
+{{ $covered := 0 }}{{ range hugo.Data.mitre }}{{ if where $items "tatica" .id }}{{ $covered = add $covered 1 }}{{ end }}{{ end }}
+<section class="block tight">
+  <div class="wrap" data-mitre>
+    <div class="mitre-bar">
+      <p class="mitre-score"><b>{{ $covered }}</b> {{ T "mitre_of" }} {{ len hugo.Data.mitre }} {{ T "mitre_covered" }}</p>
+      <div class="mitre-meter" aria-hidden="true"><span style="width: {{ div (mul $covered 100) (len hugo.Data.mitre) }}%"></span></div>
+    </div>
+    <div class="matrix" role="tablist">
+      {{ range $i, $t := hugo.Data.mitre }}
+      {{ $mine := where $items "tatica" $t.id }}
+      {{ $techs := slice }}{{ range $mine }}{{ $techs = $techs | append .tecnica }}{{ end }}{{ $techs = $techs | uniq }}
+      <button type="button" role="tab" class="tactic{{ if not $mine }} off{{ end }}" data-tactic="{{ $t.id }}" aria-selected="false"{{ if not $mine }} disabled{{ end }}>
+        <span class="mono t-id">{{ $t.id }}</span>
+        <span class="t-name">{{ index $t $lang | default $t.pt }}</span>
+        {{ if $mine }}
+        <span class="t-count"><b>{{ len $mine }}</b> {{ cond (eq (len $mine) 1) (T "mitre_items_one") (T "mitre_items") }}</span>
+        <span class="t-techs mono">{{ delimit $techs " · " }}</span>
+        {{ else }}
+        <span class="t-count muted">{{ T "mitre_none" }}</span>
+        {{ end }}
+      </button>
+      {{ end }}
+    </div>
+    <div class="mitre-panel">
+      <div class="mitre-panel-head">
+        <p class="mono muted" data-mitre-hint>{{ T "mitre_pick" }}</p>
+        <button type="button" class="mono" data-mitre-all hidden>{{ T "mitre_all" }}</button>
+      </div>
+      <ul class="mitre-list">
+        {{ range sort $items "tecnica" }}
+        <li data-tactic="{{ .tatica }}">
+          <a class="mono tech" href="https://attack.mitre.org/techniques/{{ replace .tecnica "." "/" }}/" target="_blank" rel="noopener" title="{{ .nome }}">{{ .tecnica }}</a>
+          <span class="tech-name">{{ .nome }}</span>
+          <a class="item" href="{{ .url }}">{{ .titulo }}</a>
+          <span class="mono kind">{{ cond (eq .tipo "kql") (T "kind_kql") (T "kind_post") }}</span>
+        </li>
+        {{ end }}
+      </ul>
+    </div>
+    <p class="kql-note mono">{{ T "mitre_source" }}</p>
+  </div>
+</section>
+{{ end }}

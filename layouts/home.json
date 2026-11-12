@@ -1,15 +1,15 @@
 {{- $items := slice -}}
 {{- range site.Menus.main -}}
-  {{- $items = $items | append (dict "t" .Name "u" .URL "k" (T "kind_page") "s" "") -}}
+  {{- $items = $items | append (dict "t" .Name "u" .URL "k" (T "kind_page") "c" "page" "s" "") -}}
 {{- end -}}
 {{- range where site.RegularPages "Section" "posts" -}}
-  {{- $items = $items | append (dict "t" .Title "u" .RelPermalink "k" (T "kind_post") "s" (printf "%s %s %s" (.Params.summary | default "") (delimit (.Params.tags | default slice) " ") (delimit (.Params.categories | default slice) " "))) -}}
+  {{- $items = $items | append (dict "t" .Title "u" .RelPermalink "k" (T "kind_post") "c" "post" "s" (printf "%s %s %s" (.Params.summary | default "") (delimit (.Params.tags | default slice) " ") (delimit (.Params.categories | default slice) " "))) -}}
 {{- end -}}
 {{- $en := eq site.Language.Lang "en" -}}
 {{- range hugo.Data.kql -}}
-  {{- $items = $items | append (dict "t" (cond $en (.title_en | default .titulo) .titulo) "u" (printf "%s#%s" ("kql/" | relLangURL) .id) "k" (T "kind_kql") "s" (printf "%s %s %s" .produto .tabela (delimit (.tags | default slice) " "))) -}}
+  {{- $items = $items | append (dict "t" (cond $en (.title_en | default .titulo) .titulo) "u" (printf "%s#%s" ("kql/" | relLangURL) .id) "k" (T "kind_kql") "c" "kql" "s" (printf "%s %s %s %s" .produto .tabela (delimit (.tags | default slice) " ") (delimit (apply (.mitre | default slice) "index" "." "tecnica") " "))) -}}
 {{- end -}}
 {{- range site.Taxonomies.tags -}}
-  {{- $items = $items | append (dict "t" (printf "#%s" (.Page.Title | lower)) "u" .Page.RelPermalink "k" (T "kind_topic") "s" "") -}}
+  {{- $items = $items | append (dict "t" (printf "#%s" (.Page.Title | lower)) "u" .Page.RelPermalink "k" (T "kind_topic") "c" "topic" "s" "") -}}
 {{- end -}}
 {{- $items | jsonify -}}

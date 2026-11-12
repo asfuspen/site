@@ -3,7 +3,7 @@
 <head>
   {{ partial "head.html" . }}
 </head>
-<body data-index="{{ "index.json" | relLangURL }}" data-t="{{ dict "copy" (T "copy") "copied" (T "copied") "code" (T "code") "none" (T "search_none") "loading" (T "loading") "linkCopied" (T "link_copied") | jsonify }}">
+<body data-home="{{ site.Home.RelPermalink }}" data-index="{{ "index.json" | relLangURL }}" data-t="{{ dict "copy" (T "copy") "copied" (T "copied") "code" (T "code") "none" (T "search_none") "loading" (T "loading") "linkCopied" (T "link_copied") | jsonify }}">
   <a class="skip" href="#conteudo">{{ T "skip" }}</a>
   <div class="progress" aria-hidden="true"><span></span></div>
   {{ partial "header.html" . }}
