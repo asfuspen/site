@@ -1,23 +1,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{{ $title := cond .IsHome site.Title (printf "%s | %s" .Title site.Title) }}
+{{ $title := cond .IsHome (printf "%s | %s" site.Title site.Params.headline) (printf "%s | %s" .Title site.Title) }}
 {{ $desc := .Description | default .Summary | default site.Params.description | plainify | htmlUnescape }}
+{{ $og := partial "og.html" . }}
 <title>{{ $title }}</title>
 <meta name="description" content="{{ $desc }}">
 <meta name="author" content="{{ site.Params.author }}">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#070b12">
+<meta name="view-transition" content="same-origin">
 <link rel="canonical" href="{{ .Permalink }}">
-<meta property="og:title" content="{{ $title }}">
+{{ range .AllTranslations }}
+<link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}">
+{{ end }}
+<meta property="og:title" content="{{ cond .IsHome site.Title .Title }}">
 <meta property="og:description" content="{{ $desc }}">
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:site_name" content="{{ site.Title }}">
-<meta property="og:locale" content="pt_BR">
-<meta name="twitter:card" content="summary">
+<meta property="og:locale" content="{{ replace site.Language.Locale "-" "_" }}">
+<meta property="og:image" content="{{ $og.Permalink }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ $og.Permalink }}">
 {{ if and .IsPage (eq .Section "posts") }}
 <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05-07:00" }}">
-<script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "BlogPosting" "headline" .Title "description" $desc "datePublished" (.Date.Format "2006-01-02") "dateModified" (.Lastmod.Format "2006-01-02") "inLanguage" "pt-BR" "url" .Permalink "author" (dict "@type" "Person" "name" site.Params.author "url" site.Home.Permalink) | jsonify | safeJS }}</script>
+<script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "BlogPosting" "headline" .Title "description" $desc "image" $og.Permalink "datePublished" (.Date.Format "2006-01-02") "dateModified" (.Lastmod.Format "2006-01-02") "inLanguage" site.Language.Locale "url" .Permalink "author" (dict "@type" "Person" "name" site.Params.author "url" site.Home.Permalink) | jsonify | safeJS }}</script>
 {{ end }}
 {{ range .AlternativeOutputFormats }}{{ if eq .Name "rss" }}
 <link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="{{ .Permalink }}">

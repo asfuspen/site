@@ -1,6 +1,6 @@
 <header class="site-header">
   <div class="wrap bar">
-    <a class="brand" href="{{ site.Home.RelPermalink }}" aria-label="Página inicial">
+    <a class="brand" href="{{ site.Home.RelPermalink }}" aria-label="{{ T "home" }}">
       <span class="brand-mark">{{ partial "icon.html" "shield" }}</span>
       <span class="brand-name">alessandro<b>ferreira</b></span>
     </a>
@@ -11,10 +11,15 @@
       {{ end }}
     </nav>
     <div class="tools">
-      <button class="kbtn" type="button" data-open-palette aria-label="Buscar no site">
-        {{ partial "icon.html" "search" }}<span>Buscar</span><kbd>Ctrl K</kbd>
+      <button class="kbtn" type="button" data-open-palette aria-label="{{ T "search_site" }}">
+        {{ partial "icon.html" "search" }}<span>{{ T "search" }}</span><kbd>Ctrl K</kbd>
       </button>
-      <button class="icon-btn" type="button" data-toggle-theme aria-label="Alternar tema claro e escuro">{{ partial "icon.html" "theme" }}</button>
+      {{ $other := index (where site.Home.AllTranslations "Language.Lang" "ne" site.Language.Lang) 0 }}
+      {{ with index .Translations 0 }}{{ $other = . }}{{ end }}
+      {{ with $other }}
+      <a class="icon-btn lang" href="{{ .RelPermalink }}" hreflang="{{ .Language.Locale }}" aria-label="{{ T "switch_lang" }}" title="{{ T "switch_lang" }}">{{ .Language.Params.short }}</a>
+      {{ end }}
+      <button class="icon-btn" type="button" data-toggle-theme aria-label="{{ T "toggle_theme" }}">{{ partial "icon.html" "theme" }}</button>
     </div>
   </div>
 </header>

@@ -1,50 +1,102 @@
 # Configuração do site. Quando o domínio próprio for registrado, troque o baseURL.
 baseURL = "https://asfuspen.github.io/site/"
 title = "Alessandro Ferreira"
-locale = "pt-BR"
 defaultContentLanguage = "pt-br"
+defaultContentLanguageInSubdir = false
 enableRobotsTXT = true
 summaryLength = 30
 timeZone = "America/Sao_Paulo"
 
-[languages.pt-br]
-  label = "Português"
-  weight = 1
-
 [params]
   author = "Alessandro Ferreira"
-  headline = "Cibersegurança na prática"
-  description = "Conteúdo prático sobre cibersegurança e o ecossistema de segurança da Microsoft."
-  bio = "Profissional de cibersegurança. Escrevo sobre defesa, detecção e resposta a incidentes, com foco no ecossistema de segurança da Microsoft."
   # Foto de perfil: coloque o arquivo em static/img/ e informe o caminho, por exemplo "img/foto.jpg".
   photo = ""
-  focus = ["Defender XDR", "Microsoft Sentinel", "Entra ID", "Purview", "Zero Trust"]
+  # Newsletter: informe o endereço de inscrição do serviço escolhido (Buttondown, Substack, MailerLite etc.).
+  newsletter = ""
 
   [params.social]
     github = "https://github.com/asfuspen"
     linkedin = "https://www.linkedin.com/in/eng-alessandro-ferreira/"
 
-[menus]
-  [[menus.main]]
-    name = "Blog"
-    pageRef = "/posts"
-    weight = 10
-  [[menus.main]]
-    name = "Palestras"
-    pageRef = "/palestras"
-    weight = 20
-  [[menus.main]]
-    name = "Projetos"
-    pageRef = "/projetos"
-    weight = 30
-  [[menus.main]]
-    name = "Sobre"
-    pageRef = "/sobre"
-    weight = 40
+[languages]
+  [languages.pt-br]
+    label = "Português"
+    locale = "pt-BR"
+    weight = 1
+    [languages.pt-br.params]
+      short = "PT"
+      headline = "Cibersegurança na prática"
+      description = "Conteúdo prático sobre cibersegurança e o ecossistema de segurança da Microsoft."
+      bio = "Profissional de cibersegurança. Escrevo sobre defesa, detecção e resposta a incidentes, com foco no ecossistema de segurança da Microsoft."
+    [[languages.pt-br.menus.main]]
+      name = "Blog"
+      pageRef = "/posts"
+      weight = 10
+    [[languages.pt-br.menus.main]]
+      name = "KQL"
+      pageRef = "/kql"
+      weight = 15
+    [[languages.pt-br.menus.main]]
+      name = "Palestras"
+      pageRef = "/palestras"
+      weight = 20
+    [[languages.pt-br.menus.main]]
+      name = "Projetos"
+      pageRef = "/projetos"
+      weight = 30
+    [[languages.pt-br.menus.main]]
+      name = "Sobre"
+      pageRef = "/sobre"
+      weight = 40
+
+  [languages.en]
+    label = "English"
+    locale = "en-US"
+    weight = 2
+    [languages.en.params]
+      short = "EN"
+      headline = "Hands-on cybersecurity"
+      description = "Practical content on cybersecurity and the Microsoft security ecosystem."
+      bio = "Cybersecurity professional. I write about defense, detection and incident response, with a focus on the Microsoft security ecosystem."
+    [[languages.en.menus.main]]
+      name = "Blog"
+      pageRef = "/posts"
+      weight = 10
+    [[languages.en.menus.main]]
+      name = "KQL"
+      pageRef = "/kql"
+      weight = 15
+    [[languages.en.menus.main]]
+      name = "Talks"
+      pageRef = "/palestras"
+      weight = 20
+    [[languages.en.menus.main]]
+      name = "Projects"
+      pageRef = "/projetos"
+      weight = 30
+    [[languages.en.menus.main]]
+      name = "About"
+      pageRef = "/sobre"
+      weight = 40
 
 [taxonomies]
   tag = "tags"
   category = "categories"
+  series = "series"
+
+[related]
+  includeNewer = true
+  threshold = 60
+  toLower = true
+  [[related.indices]]
+    name = "tags"
+    weight = 100
+  [[related.indices]]
+    name = "categories"
+    weight = 60
+  [[related.indices]]
+    name = "series"
+    weight = 80
 
 [pagination]
   pagerSize = 12

@@ -6,6 +6,8 @@ description: "Por que este blog existe e o que você vai encontrar por aqui."
 summary: "Por que este blog existe e o que você vai encontrar por aqui."
 categories: ["Geral"]
 tags: ["comunidade", "microsoft-security"]
+nivel: "iniciante"
+featured: true
 ---
 
 Este é o primeiro post do blog. Ele serve de exemplo do formato dos artigos e pode ser editado ou apagado à vontade.
@@ -24,7 +26,7 @@ A consulta abaixo lista as contas com mais falhas de login nas últimas 24 horas
 ```kql
 SigninLogs
 | where TimeGenerated > ago(24h)
-| where ResultType != 0
+| where ResultType != "0"
 | summarize Falhas = count() by UserPrincipalName, IPAddress
 | top 10 by Falhas desc
 ```

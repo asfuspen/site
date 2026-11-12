@@ -1,8 +1,8 @@
 {{ define "main" }}
-{{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (cond (eq .Data.Plural "tags") "tema" "categoria")) "title" (printf "#%s" (.Title | lower))) }}
+{{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (cond (eq .Data.Plural "tags") (T "topic") (cond (eq .Data.Plural "series") (T "series_label" | lower) (T "category")))) "title" (printf "#%s" (.Title | lower))) }}
 <section class="block tight">
   <div class="wrap">
-    <div class="grid">{{ range .Pages }}{{ partial "card.html" . }}{{ end }}</div>
+    <div class="grid">{{ range .Pages.ByDate }}{{ partial "card.html" (dict "page" .) }}{{ end }}</div>
   </div>
 </section>
 {{ end }}

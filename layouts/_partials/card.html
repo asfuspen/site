@@ -1,14 +1,19 @@
-<article class="card reveal">
-  <a class="card-link" href="{{ .RelPermalink }}">
-    <div class="card-top mono">
-      <span class="tag-cat">{{ with index (.Params.categories | default (slice "Artigo")) 0 }}{{ . }}{{ end }}</span>
-      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format "02 Jan 2006" }}</time>
-    </div>
-    <h3>{{ .Title }}</h3>
-    <p>{{ .Params.summary | default .Summary | plainify | truncate 150 }}</p>
-    <div class="card-foot mono">
-      <span>{{ .ReadingTime }} min de leitura</span>
-      <span class="go">ler {{ partial "icon.html" "arrow" }}</span>
+{{- $p := .page -}}
+{{- $big := .big | default false -}}
+<article class="card reveal{{ if $big }} card-big{{ end }}">
+  <a class="card-link" href="{{ $p.RelPermalink }}">
+    <div class="card-cover">{{ partial "cover.html" $p }}</div>
+    <div class="card-body">
+      <div class="card-top mono">
+        <span class="tag-cat">{{ with index ($p.Params.categories | default (slice (T "article"))) 0 }}{{ . }}{{ end }}</span>
+        <time datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date | time.Format ":date_medium" }}</time>
+      </div>
+      <h3>{{ $p.Title }}</h3>
+      <p>{{ $p.Params.summary | default $p.Summary | plainify | truncate (cond $big 240 150) }}</p>
+      <div class="card-foot mono">
+        <span>{{ $p.ReadingTime }} {{ T "min_read" }}{{ with $p.Params.nivel }} · {{ T (printf "level_%s" .) }}{{ end }}</span>
+        <span class="go">{{ T "read" }} {{ partial "icon.html" "arrow" }}</span>
+      </div>
     </div>
   </a>
 </article>

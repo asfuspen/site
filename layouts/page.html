@@ -2,18 +2,32 @@
 <article class="post">
   <header class="pagehead">
     <div class="wrap narrow-head">
-      <p class="eyebrow mono"><a href="{{ "posts/" | relURL }}">blog</a>{{ with index (.Params.categories | default slice) 0 }} / {{ . | lower }}{{ end }}</p>
+      <p class="eyebrow mono"><a href="{{ "posts/" | relLangURL }}">blog</a>{{ with index (.Params.categories | default slice) 0 }} / {{ . | lower }}{{ end }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
       <p class="meta mono">
-        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format "02 Jan 2006" }}</time>
-        <span>{{ .ReadingTime }} min de leitura</span>
-        <span>por {{ site.Params.author }}</span>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_medium" }}</time>
+        <span>{{ .ReadingTime }} {{ T "min_read" }}</span>
+        {{ with .Params.nivel }}<span class="level level-{{ . }}">{{ T (printf "level_%s" .) }}</span>{{ end }}
+        <span>{{ T "by" }} {{ site.Params.author }}</span>
       </p>
     </div>
+    <div class="wrap"><div class="post-cover">{{ partial "cover.html" . }}</div></div>
   </header>
   <div class="wrap post-grid">
     <div class="prose">
+      {{ $cur := . }}
+      {{ range .GetTerms "series" }}
+      {{ $parts := .Pages.ByDate }}
+      {{ if gt (len $parts) 1 }}
+      <aside class="seriesbox">
+        <p class="mono">{{ T "series_label" }}: <a href="{{ .RelPermalink }}">{{ .Title }}</a></p>
+        <ol>
+          {{ range $parts }}<li>{{ if eq . $cur }}<b>{{ .Title }}</b>{{ else }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}</li>{{ end }}
+        </ol>
+      </aside>
+      {{ end }}
+      {{ end }}
       {{ .Content }}
       {{ with .GetTerms "tags" }}
       <ul class="tagcloud small">
@@ -21,22 +35,32 @@
       </ul>
       {{ end }}
       <div class="share mono">
-        <span>compartilhar:</span>
+        <span>{{ T "share" }}</span>
         <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ .Permalink | urlquery }}" target="_blank" rel="noopener">LinkedIn</a>
         <a href="https://wa.me/?text={{ printf "%s %s" .Title .Permalink | urlquery }}" target="_blank" rel="noopener">WhatsApp</a>
-        <button type="button" data-copy-link="{{ .Permalink }}">copiar link</button>
+        <button type="button" data-copy-link="{{ .Permalink }}">{{ T "copy_link" }}</button>
       </div>
-      <nav class="postnav" aria-label="Outros artigos">
-        {{ with .PrevInSection }}<a href="{{ .RelPermalink }}"><span class="mono">← anterior</span>{{ .Title }}</a>{{ else }}<span></span>{{ end }}
-        {{ with .NextInSection }}<a class="next" href="{{ .RelPermalink }}"><span class="mono">próximo →</span>{{ .Title }}</a>{{ end }}
+      <nav class="postnav" aria-label="{{ T "other_posts" }}">
+        {{ with .PrevInSection }}<a href="{{ .RelPermalink }}"><span class="mono">{{ T "previous" }}</span>{{ .Title }}</a>{{ else }}<span></span>{{ end }}
+        {{ with .NextInSection }}<a class="next" href="{{ .RelPermalink }}"><span class="mono">{{ T "next" }}</span>{{ .Title }}</a>{{ end }}
       </nav>
     </div>
     {{ if gt (len .Fragments.Headings) 0 }}
-    <aside class="toc" aria-label="Neste artigo">
-      <p class="mono">// neste artigo</p>
+    <aside class="toc" aria-label="{{ T "in_this_article" }}">
+      <p class="mono">{{ T "in_this_article" }}</p>
       {{ .TableOfContents }}
     </aside>
     {{ end }}
   </div>
+  {{ $related := first 3 (where (site.RegularPages.Related .) "Section" "posts") }}
+  {{ with $related }}
+  <section class="block">
+    <div class="wrap">
+      <p class="eyebrow mono">{{ T "eyebrow_related" }}</p>
+      <h2>{{ T "related" }}</h2>
+      <div class="grid after-head">{{ range . }}{{ partial "card.html" (dict "page" .) }}{{ end }}</div>
+    </div>
+  </section>
+  {{ end }}
 </article>
 {{ end }}

@@ -1,0 +1,34 @@
+{{ define "main" }}
+{{ partial "pagehead.html" (dict "eyebrow" "// kql" "title" .Title "lead" .Content) }}
+{{ $en := eq site.Language.Lang "en" }}
+<section class="block tight">
+  <div class="wrap" data-kql>
+    <div class="kql-tools">
+      <label class="kql-search">{{ partial "icon.html" "search" }}<input type="search" placeholder="{{ T "kql_filter" }}" aria-label="{{ T "kql_filter" }}"></label>
+      <div class="kql-chips mono" role="group">
+        <button type="button" class="on" data-prod="">{{ T "kql_all" }}</button>
+        {{ $prods := slice }}{{ range hugo.Data.kql }}{{ $prods = $prods | append .produto }}{{ end }}
+        {{ range $prods | uniq }}<button type="button" data-prod="{{ . }}">{{ . }}</button>{{ end }}
+      </div>
+      <span class="mono muted"><b data-kql-count>{{ len hugo.Data.kql }}</b> {{ T "kql_count" }}</span>
+    </div>
+    <p class="kql-note mono">{{ T "kql_note" }}</p>
+    <div class="kql-list">
+      {{ range hugo.Data.kql }}
+      {{ $t := cond $en (.title_en | default .titulo) .titulo }}{{ $d := cond $en (.desc_en | default .descricao) .descricao }}
+      <article class="kql reveal" id="{{ .id }}" data-prod="{{ .produto }}" data-text="{{ printf "%s %s %s %s %s" $t $d .produto .tabela (delimit (.tags | default slice) " ") | lower }}">
+        <header>
+          <div>
+            <h2><a href="#{{ .id }}">{{ $t }}</a></h2>
+            <p class="muted">{{ $d }}</p>
+          </div>
+          <p class="mono kql-meta"><span class="tag-cat">{{ .produto }}</span><span>{{ T "kql_table" }}: {{ .tabela }}</span></p>
+        </header>
+        <div class="prose">{{ highlight (strings.TrimSpace .query) "kusto" "" }}</div>
+      </article>
+      {{ end }}
+      <p class="empty mono" data-kql-empty hidden>{{ T "search_none" }}</p>
+    </div>
+  </div>
+</section>
+{{ end }}

@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ partial "pagehead.html" (dict "eyebrow" "// índice" "title" (cond (eq .Data.Plural "tags") "Temas" "Categorias")) }}
+{{ partial "pagehead.html" (dict "eyebrow" (T "index") "title" (cond (eq .Data.Plural "tags") (T "topics") (cond (eq .Data.Plural "series") (T "series") (T "categories")))) }}
 <section class="block tight">
   <div class="wrap">
     <ul class="tagcloud">

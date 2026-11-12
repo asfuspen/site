@@ -2,5 +2,5 @@
   {{ range $k, $v := site.Params.social }}
   <li><a href="{{ $v }}" rel="me noopener" target="_blank" aria-label="{{ $k | title }}">{{ partial "icon.html" $k }}</a></li>
   {{ end }}
-  <li><a href="{{ "index.xml" | relURL }}" aria-label="Feed RSS">{{ partial "icon.html" "rss" }}</a></li>
+  <li><a href="{{ "index.xml" | relLangURL }}" aria-label="RSS">{{ partial "icon.html" "rss" }}</a></li>
 </ul>
