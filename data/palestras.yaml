@@ -1,0 +1,8 @@
+# Uma entrada por palestra, live ou workshop. Exemplo:
+# - data: 2026-12-05
+#   evento: "Nome do evento"
+#   titulo: "Título da palestra"
+#   local: "Cidade ou online"
+#   slides: "https://..."
+#   video: "https://..."
+[]

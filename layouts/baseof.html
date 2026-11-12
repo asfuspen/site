@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body data-index="{{ "index.json" | relURL }}">
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <div class="progress" aria-hidden="true"><span></span></div>
+  {{ partial "header.html" . }}
+  <main id="conteudo">
+    {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "footer.html" . }}
+  {{ partial "palette.html" . }}
+  {{ $js := resources.Get "js/main.js" | minify | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+</body>
+</html>

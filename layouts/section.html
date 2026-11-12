@@ -1,0 +1,18 @@
+{{ define "main" }}
+{{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (.Title | lower)) "title" .Title "lead" .Content) }}
+<section class="block tight">
+  <div class="wrap">
+    {{ $pag := .Paginate .RegularPages }}
+    <div class="grid">
+      {{ range $pag.Pages }}{{ partial "card.html" . }}{{ else }}<p class="empty mono">Nenhum artigo publicado ainda.</p>{{ end }}
+    </div>
+    {{ if gt $pag.TotalPages 1 }}
+    <nav class="pager mono" aria-label="Paginação">
+      {{ if $pag.HasPrev }}<a href="{{ $pag.Prev.URL }}">← mais recentes</a>{{ else }}<span></span>{{ end }}
+      <span>{{ $pag.PageNumber }} / {{ $pag.TotalPages }}</span>
+      {{ if $pag.HasNext }}<a href="{{ $pag.Next.URL }}">mais antigos →</a>{{ else }}<span></span>{{ end }}
+    </nav>
+    {{ end }}
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,11 @@
+{{- $items := slice -}}
+{{- range site.Menus.main -}}
+  {{- $items = $items | append (dict "t" .Name "u" .URL "k" "página" "s" "") -}}
+{{- end -}}
+{{- range where site.RegularPages "Section" "posts" -}}
+  {{- $items = $items | append (dict "t" .Title "u" .RelPermalink "k" "artigo" "s" (printf "%s %s %s" (.Params.summary | default "") (delimit (.Params.tags | default slice) " ") (delimit (.Params.categories | default slice) " "))) -}}
+{{- end -}}
+{{- range site.Taxonomies.tags -}}
+  {{- $items = $items | append (dict "t" (printf "#%s" (.Page.Title | lower)) "u" .Page.RelPermalink "k" "tema" "s" "") -}}
+{{- end -}}
+{{- $items | jsonify -}}

@@ -1,6 +1,6 @@
 # Guia do repositório
 
-Site pessoal de Alessandro Ferreira sobre cibersegurança, em português do Brasil. Hugo 0.165 extended com o tema Blowfish como módulo Hugo. O objetivo do conteúdo é construir um histórico de contribuições para o programa Microsoft MVP na categoria Security.
+Site pessoal de Alessandro Ferreira sobre cibersegurança, em português do Brasil. Hugo 0.165 extended com design próprio, sem tema externo: os modelos ficam em `layouts/`, os estilos em `assets/css/main.css` e os scripts em `assets/js/main.js`. Palestras e projetos são listados a partir de `data/palestras.yaml` e `data/projetos.yaml`. O objetivo do conteúdo é construir um histórico de contribuições para o programa Microsoft MVP na categoria Security.
 
 ## Regras para posts
 
