@@ -88,6 +88,169 @@
     setTimeout(next, 450);
   }
 
+  // Terminal interativo: aceita comandos de verdade
+  var tform = doc.querySelector("[data-term-form]");
+  if (tform && term) {
+    var tin = tform.querySelector("input"), en = /^en/i.test(root.lang || ""), tdata = null, hist = [], hpos = 0;
+    var S = en ? {
+      help: [["help", "show this list"], ["ls [posts|kql|tags]", "list content"], ["open <name|n>", "open a page, post or query"],
+        ["kql <term>", "search the KQL library"], ["mitre", "open the ATT&CK map"], ["whoami", "who writes here"],
+        ["theme light|dark", "switch the theme"], ["lang", "switch language"], ["social", "profiles"], ["clear", "clear the screen"]],
+      nf: "command not found. Type help.", none: "nothing found.", opening: "opening", usage: "usage:", pages: "pages", theme: "theme set to",
+      sudo: "nice try. This incident will be reported.", loading: "loading...", err: "could not load the index.", more: "and more. Refine the search."
+    } : {
+      help: [["help", "mostra esta lista"], ["ls [posts|kql|tags]", "lista o conteúdo"], ["open <nome|n>", "abre uma página, post ou consulta"],
+        ["kql <termo>", "busca na biblioteca KQL"], ["mitre", "abre o mapa ATT&CK"], ["whoami", "quem escreve aqui"],
+        ["tema claro|escuro", "troca o tema"], ["lang", "troca o idioma"], ["social", "perfis"], ["clear", "limpa a tela"]],
+      nf: "comando não encontrado. Digite help.", none: "nada encontrado.", opening: "abrindo", usage: "uso:", pages: "páginas", theme: "tema alterado para",
+      sudo: "boa tentativa. Este incidente será reportado.", loading: "carregando...", err: "não foi possível carregar o índice.", more: "e mais. Refine a busca."
+    };
+    var nrm = function (s) { return (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); };
+    var put = function (text, cls, href) {
+      var p = doc.createElement("p");
+      p.className = cls || "out";
+      if (href) { var a = doc.createElement("a"); a.href = href; a.textContent = text; p.append(a); }
+      else p.textContent = text;
+      tform.before(p);
+      return p;
+    };
+    var pair = function (a, b) {
+      var p = doc.createElement("p"), x = doc.createElement("span"), y = doc.createElement("span");
+      p.className = "out cols"; x.textContent = a; y.textContent = b; p.append(x, y); tform.before(p);
+    };
+    var load = function () {
+      if (tdata) return Promise.resolve(tdata);
+      return fetch(doc.body.dataset.index).then(function (r) { return r.json(); }).then(function (j) { tdata = j; return j; });
+    };
+    var of = function (c) { return tdata.filter(function (it) { return it.c === c; }); };
+    var last = [];
+    var listing = function (items, max) {
+      last = items.slice(0, max || 12);
+      if (!last.length) { put(S.none); return; }
+      last.forEach(function (it, n) { put((n + 1) + "  " + it.t, "out", it.u); });
+      if (items.length > last.length) put(S.more, "out tip");
+    };
+    var go = function (it) { put(S.opening + " " + it.t + "...", "out ok"); setTimeout(function () { location.href = it.u; }, 350); };
+    var slug = function (u) { var s = u.replace(/[#?].*$/, "").split("/").filter(Boolean); return s.length ? s[s.length - 1] : ""; };
+    var setTheme = function (v) {
+      root.dataset.theme = v;
+      try { localStorage.setItem("tema", v); } catch (e) {}
+      put(S.theme + " " + (en ? v : (v === "light" ? "claro" : "escuro")) + ".", "out ok");
+    };
+    var run = function (raw) {
+      var parts = raw.trim().split(/\s+/), cmd = nrm(parts[0]), arg = nrm(parts.slice(1).join(" ")).replace(/\/+$/, "");
+      if (cmd === "help" || cmd === "ajuda" || cmd === "?") { S.help.forEach(function (h) { pair(h[0], h[1]); }); return; }
+      if (cmd === "clear" || cmd === "cls" || cmd === "limpar") {
+        Array.prototype.slice.call(term.children).forEach(function (el) { if (el !== tform) el.remove(); });
+        return;
+      }
+      if (cmd === "whoami") { put(tform.dataset.who || ""); return; }
+      if (cmd === "date" || cmd === "data") { put(new Date().toLocaleString(root.lang || "pt-BR")); return; }
+      if (cmd === "sudo" || cmd === "su" || cmd === "rm") { put(S.sudo); return; }
+      if (cmd === "echo") { put(parts.slice(1).join(" ")); return; }
+      if (cmd === "pwd") { put(location.pathname); return; }
+      if (cmd === "tema" || cmd === "theme") {
+        if (/^(claro|light)$/.test(arg)) setTheme("light");
+        else if (/^(escuro|dark)$/.test(arg)) setTheme("dark");
+        else put(S.usage + " " + (en ? "theme light|dark" : "tema claro|escuro"));
+        return;
+      }
+      if (cmd === "lang" || cmd === "idioma") {
+        var alt = doc.querySelector("a.lang[hreflang]");
+        if (alt) go({ t: alt.getAttribute("hreflang"), u: alt.href }); else put(S.none);
+        return;
+      }
+      if (cmd === "social") {
+        var seen = {};
+        doc.querySelectorAll("a[rel~=me]").forEach(function (a) {
+          if (seen[a.href]) return; seen[a.href] = 1;
+          put(a.getAttribute("aria-label") || a.textContent.trim() || a.href, "out", a.href);
+        });
+        return;
+      }
+      var wait = put(S.loading, "out tip");
+      return load().then(function () {
+        wait.remove();
+        var pages = of("page");
+        if (cmd === "mitre" || cmd === "attack") {
+          var m = pages.filter(function (it) { return slug(it.u) === "mitre"; })[0];
+          if (m) go(m); else put(S.none);
+        } else if (cmd === "ls" || cmd === "dir") {
+          var w = arg.replace(/^-\S+\s*/, "");
+          if (/^post|^blog/.test(w)) listing(of("post"));
+          else if (/^kql/.test(w)) listing(of("kql"));
+          else if (/^tag|^topic|^tema/.test(w)) listing(of("topic"), 20);
+          else { listing(pages); put("posts/  kql/  tags/", "out tip"); }
+        } else if (cmd === "kql") {
+          if (!arg) listing(of("kql"));
+          else listing(of("kql").filter(function (it) { return nrm(it.t + " " + it.s).indexOf(arg) > -1; }));
+        } else if (cmd === "open" || cmd === "cat" || cmd === "cd" || cmd === "abrir") {
+          if (!arg) { put(S.usage + " open <" + (en ? "name|n" : "nome|n") + ">"); return; }
+          if (arg === "~" || arg === "home" || arg === "inicio") { go({ t: "~", u: doc.body.dataset.home }); return; }
+          var n = parseInt(arg, 10), hit = null;
+          if (String(n) === arg && last[n - 1]) hit = last[n - 1];
+          if (!hit) {
+            var a = arg.replace(/^posts\/|^kql\/|\.(md|kql|txt)$/g, "");
+            hit = tdata.filter(function (it) { return slug(it.u) === a || nrm(it.t) === a || (it.u.split("#")[1] || "") === a; })[0] ||
+              tdata.filter(function (it) { return nrm(it.t).indexOf(a) > -1; })[0];
+          }
+          if (hit) go(hit); else put(S.none);
+        } else put(parts[0] + ": " + S.nf);
+      }).catch(function () { wait.remove(); put(S.err); });
+    };
+    var names = ["help", "ls", "open", "kql", "mitre", "whoami", en ? "theme" : "tema", "lang", "social", "clear", "date"];
+    tform.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = tin.value.trim();
+      if (!v) return;
+      tin.value = "";
+      hist.push(v); hpos = hist.length;
+      var p = doc.createElement("p"), ps = doc.createElement("span");
+      p.className = "cmd echo"; ps.className = "ps"; ps.textContent = "$";
+      p.append(ps, " " + v); tform.before(p);
+      var done = function () { term.scrollTop = term.scrollHeight; };
+      var r = run(v);
+      if (r && r.then) r.then(done); else done();
+    });
+    tin.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hpos = Math.max(0, hpos - 1); tin.value = hist[hpos]; }
+      else if (e.key === "ArrowDown" && hist.length) { e.preventDefault(); hpos = Math.min(hist.length, hpos + 1); tin.value = hist[hpos] || ""; }
+      else if (e.key === "Tab" && tin.value && tin.value.indexOf(" ") < 0) {
+        var c = names.filter(function (x) { return x.indexOf(nrm(tin.value)) === 0; });
+        if (c.length === 1) { e.preventDefault(); tin.value = c[0] + " "; }
+      } else if (e.key === "l" && e.ctrlKey) { e.preventDefault(); run("clear"); }
+    });
+    term.addEventListener("click", function (e) {
+      if (e.target.closest("a") || String(getSelection())) return;
+      tin.focus({ preventScroll: true });
+    });
+  }
+
+  // Mapa ATT&CK: filtra as detecções pela tática escolhida
+  var mitre = doc.querySelector("[data-mitre]");
+  if (mitre) {
+    var tacs = mitre.querySelectorAll(".tactic"), rows = mitre.querySelectorAll(".mitre-list li"),
+      hint = mitre.querySelector("[data-mitre-hint]"), all = mitre.querySelector("[data-mitre-all]"), hint0 = hint ? hint.textContent : "";
+    var pick = function (id) {
+      tacs.forEach(function (b) { b.setAttribute("aria-selected", b.dataset.tactic === id ? "true" : "false"); });
+      rows.forEach(function (li) { li.hidden = !!id && li.dataset.tactic !== id; });
+      if (all) all.hidden = !id;
+      if (hint) {
+        var b = id && mitre.querySelector('.tactic[data-tactic="' + id + '"]');
+        hint.textContent = b ? b.querySelector(".t-id").textContent + " · " + b.querySelector(".t-name").textContent : hint0;
+      }
+    };
+    tacs.forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (b.disabled) return;
+        pick(b.getAttribute("aria-selected") === "true" ? "" : b.dataset.tactic);
+      });
+    });
+    if (all) all.addEventListener("click", function () { pick(""); });
+    var h = location.hash.slice(1).toUpperCase();
+    if (/^TA\d{4}$/.test(h) && mitre.querySelector('.tactic[data-tactic="' + h + '"]:not([disabled])')) pick(h);
+  }
+
   // Rede animada no fundo do topo
   var cv = doc.querySelector(".net");
   if (cv && !reduce && cv.getContext) {

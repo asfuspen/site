@@ -1,0 +1,16 @@
+{{- /* Devolve os itens (consultas e posts) mapeados para o ATT&CK no idioma atual. */ -}}
+{{- $en := eq site.Language.Lang "en" -}}
+{{- $items := slice -}}
+{{- range hugo.Data.kql -}}
+  {{- $q := . -}}
+  {{- range .mitre -}}
+    {{- $items = $items | append (dict "tatica" .tatica "tecnica" .tecnica "nome" .nome "titulo" (cond $en ($q.title_en | default $q.titulo) $q.titulo) "url" (printf "%s#%s" ("kql/" | relLangURL) $q.id) "tipo" "kql") -}}
+  {{- end -}}
+{{- end -}}
+{{- range where site.RegularPages "Section" "posts" -}}
+  {{- $p := . -}}
+  {{- range .Params.mitre -}}
+    {{- $items = $items | append (dict "tatica" .tatica "tecnica" .tecnica "nome" .nome "titulo" $p.Title "url" $p.RelPermalink "tipo" "post") -}}
+  {{- end -}}
+{{- end -}}
+{{- return $items -}}

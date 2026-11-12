@@ -37,6 +37,10 @@ timeZone = "America/Sao_Paulo"
       pageRef = "/kql"
       weight = 15
     [[languages.pt-br.menus.main]]
+      name = "ATT&CK"
+      pageRef = "/mitre"
+      weight = 17
+    [[languages.pt-br.menus.main]]
       name = "Palestras"
       pageRef = "/palestras"
       weight = 20
@@ -66,6 +70,10 @@ timeZone = "America/Sao_Paulo"
       name = "KQL"
       pageRef = "/kql"
       weight = 15
+    [[languages.en.menus.main]]
+      name = "ATT&CK"
+      pageRef = "/mitre"
+      weight = 17
     [[languages.en.menus.main]]
       name = "Talks"
       pageRef = "/palestras"

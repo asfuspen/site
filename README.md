@@ -10,6 +10,7 @@ Blog de cibersegurança feito com [Hugo](https://gohugo.io/) e design próprio. 
 | `data/palestras.yaml` | Lista de palestras, lives e workshops |
 | `data/projetos.yaml` | Lista de projetos e contribuições |
 | `data/kql.yaml` | Biblioteca de consultas KQL |
+| `data/mitre.yaml` | Táticas do MITRE ATT&CK usadas no mapa em `/mitre/`. O mapa é preenchido pelo campo `mitre` das consultas KQL e dos posts |
 | `data/certificacoes.yaml` | Certificações exibidas na página inicial |
 | `data/areas.yaml` | Áreas de atuação da página inicial |
 | `i18n/` | Textos da interface em português e inglês |

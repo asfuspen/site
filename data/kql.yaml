@@ -1,4 +1,5 @@
-# Biblioteca de consultas KQL. Campos: id, titulo, title_en, descricao, desc_en, produto, tabela, tags, query.
+# Biblioteca de consultas KQL. Campos: id, titulo, title_en, descricao, desc_en, produto, tabela, tags, mitre, query.
+# mitre: lista de { tatica: "TA....", tecnica: "T....", nome: "nome oficial em inglês" }, usada no mapa ATT&CK.
 - id: "falhas-login-usuario-ip"
   titulo: "Falhas de login por usuário e IP"
   title_en: "Failed sign-ins by user and IP"
@@ -7,6 +8,8 @@
   produto: "Sentinel"
   tabela: "SigninLogs"
   tags: ["identidade", "entra id"]
+  mitre:
+    - { tatica: "TA0006", tecnica: "T1110", nome: "Brute Force" }
   query: |
     SigninLogs
     | where TimeGenerated > ago(24h)
@@ -21,6 +24,8 @@
   produto: "Sentinel"
   tabela: "SigninLogs"
   tags: ["identidade", "força bruta"]
+  mitre:
+    - { tatica: "TA0006", tecnica: "T1110.003", nome: "Password Spraying" }
   query: |
     SigninLogs
     | where TimeGenerated > ago(1d)
@@ -37,6 +42,8 @@
   produto: "Sentinel"
   tabela: "SigninLogs"
   tags: ["identidade", "acesso condicional"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1078", nome: "Valid Accounts" }
   query: |
     SigninLogs
     | where TimeGenerated > ago(7d)
@@ -52,6 +59,9 @@
   produto: "Sentinel"
   tabela: "AuditLogs"
   tags: ["identidade", "privilégio"]
+  mitre:
+    - { tatica: "TA0003", tecnica: "T1098.003", nome: "Additional Cloud Roles" }
+    - { tatica: "TA0004", tecnica: "T1098.003", nome: "Additional Cloud Roles" }
   query: |
     AuditLogs
     | where TimeGenerated > ago(7d)
@@ -69,6 +79,8 @@
   produto: "Sentinel"
   tabela: "OfficeActivity"
   tags: ["e-mail", "exfiltração"]
+  mitre:
+    - { tatica: "TA0009", tecnica: "T1114.003", nome: "Email Forwarding Rule" }
   query: |
     OfficeActivity
     | where TimeGenerated > ago(7d)
@@ -84,6 +96,9 @@
   produto: "Defender XDR"
   tabela: "DeviceProcessEvents"
   tags: ["endpoint", "execução"]
+  mitre:
+    - { tatica: "TA0002", tecnica: "T1059.001", nome: "PowerShell" }
+    - { tatica: "TA0005", tecnica: "T1027", nome: "Obfuscated Files or Information" }
   query: |
     DeviceProcessEvents
     | where Timestamp > ago(7d)
@@ -100,6 +115,9 @@
   produto: "Defender XDR"
   tabela: "DeviceProcessEvents"
   tags: ["endpoint", "phishing"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1566.001", nome: "Spearphishing Attachment" }
+    - { tatica: "TA0002", tecnica: "T1204.002", nome: "Malicious File" }
   query: |
     DeviceProcessEvents
     | where Timestamp > ago(7d)
@@ -115,6 +133,8 @@
   produto: "Defender XDR"
   tabela: "EmailEvents"
   tags: ["e-mail", "phishing"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1566", nome: "Phishing" }
   query: |
     EmailEvents
     | where Timestamp > ago(7d)
