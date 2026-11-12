@@ -1,4 +1,5 @@
-# Táticas da matriz MITRE ATT&CK Enterprise, na ordem oficial.
+# Táticas da matriz MITRE ATT&CK Enterprise, na ordem oficial (conteúdo v20.1, conferido em attack.mitre.org em 2026-11-12).
+# Desde a v19 (abril de 2026) a antiga Defense Evasion foi dividida em Stealth (TA0005) e Defense Impairment (TA0112).
 - id: "TA0043"
   en: "Reconnaissance"
   pt: "Reconhecimento"
@@ -18,8 +19,11 @@
   en: "Privilege Escalation"
   pt: "Escalação de privilégio"
 - id: "TA0005"
-  en: "Defense Evasion"
-  pt: "Evasão de defesas"
+  en: "Stealth"
+  pt: "Furtividade"
+- id: "TA0112"
+  en: "Defense Impairment"
+  pt: "Enfraquecimento de defesas"
 - id: "TA0006"
   en: "Credential Access"
   pt: "Acesso a credenciais"

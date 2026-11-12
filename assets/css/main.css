@@ -386,7 +386,7 @@ kbd { font: 500 .68rem var(--mono); border: 1px solid var(--line); border-radius
 .mitre-score b { font: 700 2rem/1 var(--display); color: var(--accent); margin-right: 4px; }
 .mitre-meter { flex: 1 1 220px; height: 8px; border-radius: 999px; background: var(--surface2); border: 1px solid var(--line); overflow: hidden; }
 .mitre-meter span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 999px; }
-.matrix { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
+.matrix { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .tactic { display: flex; flex-direction: column; gap: 6px; text-align: left; padding: 16px; min-height: 148px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); transition: transform .2s, border-color .2s, box-shadow .2s; }
 .tactic:not(.off):hover { transform: translateY(-3px); border-color: var(--accent); }
 .tactic[aria-selected="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--glow); background: linear-gradient(160deg, var(--glow), var(--surface) 70%); }
@@ -407,7 +407,7 @@ kbd { font: 500 .68rem var(--mono); border: 1px solid var(--line); border-radius
 .mitre-list .item { font-weight: 600; }
 .mitre-list .item:hover { color: var(--accent); }
 .mitre-list .kind { color: var(--muted); font-size: .7rem; }
-.mitre-strip { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 8px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); transition: border-color .25s; }
+.mitre-strip { display: grid; grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 8px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); transition: border-color .25s; }
 .mitre-strip:hover { border-color: var(--accent); }
 .mitre-strip .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; }
 .mitre-strip i { display: block; width: 100%; height: 64px; border-radius: 8px; background: var(--surface2); border: 1px dashed var(--line); }
@@ -430,11 +430,14 @@ kbd { font: 500 .68rem var(--mono); border: 1px solid var(--line); border-radius
 .term-body .cols span:nth-child(odd) { color: #3df5c4; }
 
 @media (max-width: 1100px) {
-  .matrix { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .mitre-strip { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .matrix { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mitre-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 @media (max-width: 960px) {
   .nav a { padding: 8px 9px; }
+  .bar { flex-wrap: wrap; height: auto; padding: 10px 0 0; gap: 8px 12px; }
+  .nav { order: 3; width: 100%; margin: 0 -8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+  .tools { margin-left: auto; }
 }
 @media (max-width: 720px) {
   .matrix { grid-template-columns: repeat(2, minmax(0, 1fr)); }
