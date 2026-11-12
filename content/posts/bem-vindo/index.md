@@ -31,4 +31,4 @@ SigninLogs
 
 ## Próximos passos
 
-Os próximos artigos entram em temas específicos. Se tiver uma sugestão de assunto, entre em contato pelos links da página [Sobre]({{< ref "sobre" >}}).
+Os próximos artigos entram em temas específicos. Se tiver uma sugestão de assunto, entre em contato pelos links da página [Sobre]({{< relref "/sobre" >}}).

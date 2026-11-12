@@ -1,0 +1,13 @@
+<footer class="site-footer">
+  <div class="wrap foot">
+    <div>
+      <p class="foot-name">{{ site.Params.author }}</p>
+      <p class="muted">{{ site.Params.headline }}</p>
+    </div>
+    {{ partial "social.html" . }}
+  </div>
+  <div class="wrap foot-meta">
+    <span>© {{ now.Year }} {{ site.Params.author }}</span>
+    <span class="mono">status: <i class="dot"></i> online</span>
+  </div>
+</footer>

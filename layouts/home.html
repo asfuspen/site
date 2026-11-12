@@ -1,0 +1,93 @@
+{{ define "main" }}
+{{ $posts := where site.RegularPages "Section" "posts" }}
+<section class="hero">
+  <canvas class="net" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <p class="eyebrow mono"><i class="dot"></i> {{ site.Params.headline }}</p>
+      <h1>{{ with site.Params.photo }}<img class="avatar" src="{{ . | relURL }}" alt="Foto de {{ site.Params.author }}" width="72" height="72">{{ end }}<span class="grad">{{ site.Params.author }}</span></h1>
+      <div class="lead">{{ .Content }}</div>
+      <ul class="chips">
+        {{ range site.Params.focus }}<li>{{ . }}</li>{{ end }}
+      </ul>
+      <div class="cta">
+        <a class="btn primary" href="{{ "posts/" | relURL }}">Ler o blog {{ partial "icon.html" "arrow" }}</a>
+        <a class="btn" href="{{ "sobre/" | relURL }}">Sobre mim</a>
+        {{ partial "social.html" . }}
+      </div>
+    </div>
+    <div class="term" aria-label="Apresentação em formato de terminal">
+      <div class="term-bar"><i></i><i></i><i></i><span class="mono">alessandro@sec: ~</span></div>
+      <div class="term-body mono" data-terminal>
+        <p class="cmd"><span class="ps">$</span> <span data-type>whoami</span></p>
+        <p class="out">{{ site.Params.author }}, {{ site.Params.headline | lower }}</p>
+        <p class="cmd"><span class="ps">$</span> <span data-type>cat foco.txt</span></p>
+        <p class="out">{{ delimit site.Params.focus " · " }}</p>
+        <p class="cmd"><span class="ps">$</span> <span data-type>ls -t posts/ | head -3</span></p>
+        {{ range first 3 $posts }}
+        <p class="out"><a href="{{ .RelPermalink }}">{{ .Title }}</a></p>
+        {{ else }}
+        <p class="out">em breve</p>
+        {{ end }}
+        <p class="cmd"><span class="ps">$</span> <span class="caret"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap stats-grid">
+    {{ $np := len (hugo.Data.palestras | default slice) }}{{ $nj := len (hugo.Data.projetos | default slice) }}
+    <a class="stat" href="{{ "posts/" | relURL }}"><b data-count="{{ len $posts }}">{{ len $posts }}</b><span>{{ cond (eq (len $posts) 1) "artigo publicado" "artigos publicados" }}</span></a>
+    {{ if gt $np 0 }}<a class="stat" href="{{ "palestras/" | relURL }}"><b data-count="{{ $np }}">{{ $np }}</b><span>palestras e lives</span></a>{{ end }}
+    {{ if gt $nj 0 }}<a class="stat" href="{{ "projetos/" | relURL }}"><b data-count="{{ $nj }}">{{ $nj }}</b><span>{{ cond (eq $nj 1) "projeto" "projetos" }}</span></a>{{ end }}
+    <a class="stat" href="{{ "tags/" | relURL }}"><b data-count="{{ len site.Taxonomies.tags }}">{{ len site.Taxonomies.tags }}</b><span>temas abordados</span></a>
+    <a class="stat" href="{{ "index.xml" | relURL }}"><b class="mono-b">RSS</b><span>assine as novidades</span></a>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="block-head">
+      <div>
+        <p class="eyebrow mono">// últimos artigos</p>
+        <h2>Do laboratório para o blog</h2>
+      </div>
+      <a class="more" href="{{ "posts/" | relURL }}">Ver todos {{ partial "icon.html" "arrow" }}</a>
+    </div>
+    <div class="grid">
+      {{ range first 6 $posts }}{{ partial "card.html" . }}{{ end }}
+    </div>
+  </div>
+</section>
+
+{{ with site.Taxonomies.tags }}
+<section class="block">
+  <div class="wrap">
+    <p class="eyebrow mono">// temas</p>
+    <h2>Explore por assunto</h2>
+    <ul class="tagcloud">
+      {{ range .ByCount }}
+      <li><a href="{{ .Page.RelPermalink }}">#{{ .Page.Title | lower }} <span>{{ .Count }}</span></a></li>
+      {{ end }}
+    </ul>
+  </div>
+</section>
+{{ end }}
+
+<section class="block">
+  <div class="wrap">
+    <div class="callout reveal">
+      <div>
+        <p class="eyebrow mono">// comunidade</p>
+        <h2>Vamos conversar sobre segurança?</h2>
+        <p class="muted">Convites para eventos, sugestões de tema e trocas de experiência são bem-vindos.</p>
+      </div>
+      <div class="cta">
+        {{ with site.Params.social.linkedin }}<a class="btn primary" href="{{ . }}" target="_blank" rel="noopener">Conectar no LinkedIn {{ partial "icon.html" "arrow" }}</a>{{ end }}
+        <a class="btn" href="{{ "index.xml" | relURL }}">Assinar o feed</a>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}

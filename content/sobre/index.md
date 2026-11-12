@@ -1,10 +1,7 @@
 ---
 title: "Sobre"
 description: "Quem sou e como falar comigo."
-showDate: false
-showReadingTime: false
-showTableOfContents: false
-showPagination: false
+layout: "simples"
 ---
 
 Sou **Alessandro Ferreira**, profissional de cibersegurança.

@@ -1,0 +1,12 @@
+{{ define "main" }}
+{{ partial "pagehead.html" (dict "eyebrow" "// índice" "title" (cond (eq .Data.Plural "tags") "Temas" "Categorias")) }}
+<section class="block tight">
+  <div class="wrap">
+    <ul class="tagcloud">
+      {{ range .Data.Terms.ByCount }}
+      <li><a href="{{ .Page.RelPermalink }}">#{{ .Page.Title | lower }} <span>{{ .Count }}</span></a></li>
+      {{ end }}
+    </ul>
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,14 @@
+{{ define "main" }}
+<section class="block">
+  <div class="wrap narrow">
+    <div class="term">
+      <div class="term-bar"><i></i><i></i><i></i><span class="mono">alessandro@sec: ~</span></div>
+      <div class="term-body mono">
+        <p class="cmd"><span class="ps">$</span> curl -I {{ "esta-pagina" }}</p>
+        <p class="out err">HTTP/2 404: página não encontrada</p>
+        <p class="cmd"><span class="ps">$</span> cd <a href="{{ site.Home.RelPermalink }}">~/inicio</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,19 @@
+{{ define "main" }}
+{{ partial "pagehead.html" (dict "eyebrow" "// projetos" "title" .Title "lead" .Content) }}
+<section class="block tight">
+  <div class="wrap">
+    <div class="grid">
+      {{ range hugo.Data.projetos }}
+      <article class="card reveal">
+        <a class="card-link" href="{{ .url }}" target="_blank" rel="noopener">
+          <div class="card-top mono"><span class="tag-cat">projeto</span><span>{{ delimit (.tags | default slice) " · " }}</span></div>
+          <h3>{{ .nome }}</h3>
+          <p>{{ .descricao }}</p>
+          <div class="card-foot mono"><span></span><span class="go">abrir {{ partial "icon.html" "arrow" }}</span></div>
+        </a>
+      </article>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

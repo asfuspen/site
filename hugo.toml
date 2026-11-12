@@ -1,0 +1,65 @@
+# Configuração do site. Quando o domínio próprio for registrado, troque o baseURL.
+baseURL = "https://asfuspen.github.io/site/"
+title = "Alessandro Ferreira"
+locale = "pt-BR"
+defaultContentLanguage = "pt-br"
+enableRobotsTXT = true
+summaryLength = 30
+timeZone = "America/Sao_Paulo"
+
+[languages.pt-br]
+  label = "Português"
+  weight = 1
+
+[params]
+  author = "Alessandro Ferreira"
+  headline = "Cibersegurança na prática"
+  description = "Conteúdo prático sobre cibersegurança e o ecossistema de segurança da Microsoft."
+  bio = "Profissional de cibersegurança. Escrevo sobre defesa, detecção e resposta a incidentes, com foco no ecossistema de segurança da Microsoft."
+  # Foto de perfil: coloque o arquivo em static/img/ e informe o caminho, por exemplo "img/foto.jpg".
+  photo = ""
+  focus = ["Defender XDR", "Microsoft Sentinel", "Entra ID", "Purview", "Zero Trust"]
+
+  [params.social]
+    github = "https://github.com/asfuspen"
+    linkedin = "https://www.linkedin.com/in/eng-alessandro-ferreira/"
+
+[menus]
+  [[menus.main]]
+    name = "Blog"
+    pageRef = "/posts"
+    weight = 10
+  [[menus.main]]
+    name = "Palestras"
+    pageRef = "/palestras"
+    weight = 20
+  [[menus.main]]
+    name = "Projetos"
+    pageRef = "/projetos"
+    weight = 30
+  [[menus.main]]
+    name = "Sobre"
+    pageRef = "/sobre"
+    weight = 40
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+
+[pagination]
+  pagerSize = 12
+
+[outputs]
+  home = ["html", "rss", "json"]
+
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true
+  [markup.goldmark.parser.attribute]
+    block = true
+  [markup.highlight]
+    noClasses = false
+    lineNos = false
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
