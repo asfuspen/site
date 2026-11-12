@@ -24,4 +24,4 @@ Sou **Alessandro Ferreira**, profissional de cibersegurança.
 ## Contato
 
 - GitHub: [asfuspen](https://github.com/asfuspen)
-<!-- - LinkedIn: adicione o seu link -->
+- LinkedIn: [eng-alessandro-ferreira](https://www.linkedin.com/in/eng-alessandro-ferreira/)

@@ -19,6 +19,6 @@ title = "Alessandro Ferreira"
   bio = "Profissional de cibersegurança. Escrevo sobre defesa, detecção e resposta a incidentes, com foco no ecossistema de segurança da Microsoft."
   links = [
     { github = "https://github.com/asfuspen" },
-    # { linkedin = "https://linkedin.com/in/SEU-USUARIO" },
+    { linkedin = "https://www.linkedin.com/in/eng-alessandro-ferreira/" },
     # { youtube = "https://youtube.com/@SEU-CANAL" },
   ]
