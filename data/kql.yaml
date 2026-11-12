@@ -35,10 +35,10 @@
     | where Usuarios >= 10
     | order by Usuarios desc
 - id: "autenticacao-legada"
-  titulo: "Logins com autenticação legada"
-  title_en: "Sign-ins using legacy authentication"
-  descricao: "Mostra logins bem-sucedidos feitos por clientes que não são navegador nem aplicativos modernos, candidatos a bloqueio por acesso condicional."
-  desc_en: "Shows successful sign-ins from clients other than browsers and modern apps, candidates for a Conditional Access block."
+  titulo: "Logins por tipo de cliente, para achar autenticação legada"
+  title_en: "Sign-ins by client app, to find legacy authentication"
+  descricao: "Conta os logins bem-sucedidos por tipo de cliente. Procure no resultado os clientes de autenticação legada, como Exchange ActiveSync, IMAP4, POP3 e SMTP, candidatos a bloqueio por acesso condicional."
+  desc_en: "Counts successful sign-ins by client app. Look in the result for legacy authentication clients such as Exchange ActiveSync, IMAP4, POP3 and SMTP, candidates for a Conditional Access block."
   produto: "Sentinel"
   tabela: "SigninLogs"
   tags: ["identidade", "acesso condicional"]
@@ -48,8 +48,7 @@
     SigninLogs
     | where TimeGenerated > ago(7d)
     | where ResultType == "0"
-    | where ClientAppUsed !in ("Browser", "Mobile Apps and Desktop clients")
-    | summarize Logins = count() by UserPrincipalName, ClientAppUsed, AppDisplayName
+    | summarize Logins = count(), Usuarios = dcount(UserPrincipalName) by ClientAppUsed
     | order by Logins desc
 - id: "novos-membros-em-funcoes"
   titulo: "Novos membros em funções administrativas"
@@ -67,8 +66,16 @@
     | where TimeGenerated > ago(7d)
     | where OperationName == "Add member to role"
     | extend Autor = tostring(InitiatedBy.user.userPrincipalName)
-    | extend Alvo = tostring(TargetResources[0].userPrincipalName)
-    | extend Funcao = tostring(TargetResources[0].modifiedProperties[1].newValue)
+    | mv-apply Recurso = TargetResources on (
+        where Recurso.type in~ ("User", "ServicePrincipal")
+        | extend Alvo = iff(Recurso.type =~ "ServicePrincipal",
+            tostring(Recurso.displayName), tostring(Recurso.userPrincipalName)),
+            Propriedades = Recurso.modifiedProperties
+      )
+    | mv-apply Propriedade = Propriedades on (
+        where Propriedade.displayName =~ "Role.DisplayName"
+        | extend Funcao = trim('"', tostring(Propriedade.newValue))
+      )
     | project TimeGenerated, Autor, Alvo, Funcao, Result
     | order by TimeGenerated desc
 - id: "regras-encaminhamento-caixa"
@@ -85,7 +92,7 @@
     OfficeActivity
     | where TimeGenerated > ago(7d)
     | where Operation in ("New-InboxRule", "Set-InboxRule")
-    | where Parameters has_any ("ForwardTo", "RedirectTo", "ForwardAsAttachmentTo")
+    | where Parameters has_any ("ForwardTo", "RedirectTo")
     | project TimeGenerated, UserId, ClientIP, Operation, Parameters
     | order by TimeGenerated desc
 - id: "powershell-codificado"

@@ -17,7 +17,6 @@ Este é o primeiro post do blog. Ele serve de exemplo do formato dos artigos e p
 - **Tutoriais práticos** de configuração e operação de ferramentas de segurança.
 - **Detecção e resposta**, com consultas KQL comentadas para Microsoft Sentinel e Defender XDR.
 - **Identidade e acesso**, com boas práticas de Entra ID, acesso condicional e Zero Trust.
-- **Anotações de laboratório**, com testes, erros e aprendizados.
 
 ## Exemplo de bloco de código
 

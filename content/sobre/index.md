@@ -4,19 +4,17 @@ description: "Quem sou e como falar comigo."
 layout: "simples"
 ---
 
-Sou **Alessandro Ferreira**, profissional de cibersegurança.
+Sou **Alessandro Ferreira**. Este site reúne o que publico sobre cibersegurança.
 
 <!-- Edite esta página com a sua história: onde trabalha, áreas de atuação e interesses. -->
 
-## Áreas de interesse
+## Temas do site
 
 - Detecção de ameaças e resposta a incidentes
 - Segurança de identidade e Zero Trust
 - Segurança em nuvem com Microsoft Defender, Sentinel, Entra ID e Purview
 
-## Certificações
-
-<!-- Liste aqui as suas certificações. -->
+<!-- Certificações: acrescente uma seção aqui quando quiser listar as suas. -->
 
 ## Contato
 

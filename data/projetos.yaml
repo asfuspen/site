@@ -1,5 +1,5 @@
 # Uma entrada por projeto. Campos: nome, descricao, url, tags.
-- nome: "GitHub"
-  descricao: "Repositórios públicos, scripts e experimentos."
-  url: "https://github.com/asfuspen"
-  tags: ["open source"]
+- nome: "Código deste site"
+  descricao: "Repositório público com o código-fonte deste site, feito em Hugo, incluindo a biblioteca de consultas KQL."
+  url: "https://github.com/asfuspen/site"
+  tags: ["open source", "hugo", "kql"]

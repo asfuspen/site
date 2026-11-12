@@ -17,7 +17,6 @@ This is the first post on the blog. It works as a sample of the post format and 
 - **Hands-on tutorials** on configuring and operating security tools.
 - **Detection and response**, with commented KQL queries for Microsoft Sentinel and Defender XDR.
 - **Identity and access**, with good practices for Entra ID, Conditional Access and Zero Trust.
-- **Lab notes**, with tests, mistakes and lessons learned.
 
 ## Code block example
 
