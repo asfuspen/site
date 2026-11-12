@@ -1,0 +1,7 @@
+# Uma entrada por certificação. A seção só aparece no site quando houver ao menos uma. Exemplo:
+# - codigo: "SC-200"
+#   nome: "Microsoft Security Operations Analyst"
+#   emissor: "Microsoft"
+#   ano: 2026
+#   url: "https://learn.microsoft.com/..."
+[]

@@ -1,11 +1,15 @@
 {{- $items := slice -}}
 {{- range site.Menus.main -}}
-  {{- $items = $items | append (dict "t" .Name "u" .URL "k" "página" "s" "") -}}
+  {{- $items = $items | append (dict "t" .Name "u" .URL "k" (T "kind_page") "s" "") -}}
 {{- end -}}
 {{- range where site.RegularPages "Section" "posts" -}}
-  {{- $items = $items | append (dict "t" .Title "u" .RelPermalink "k" "artigo" "s" (printf "%s %s %s" (.Params.summary | default "") (delimit (.Params.tags | default slice) " ") (delimit (.Params.categories | default slice) " "))) -}}
+  {{- $items = $items | append (dict "t" .Title "u" .RelPermalink "k" (T "kind_post") "s" (printf "%s %s %s" (.Params.summary | default "") (delimit (.Params.tags | default slice) " ") (delimit (.Params.categories | default slice) " "))) -}}
+{{- end -}}
+{{- $en := eq site.Language.Lang "en" -}}
+{{- range hugo.Data.kql -}}
+  {{- $items = $items | append (dict "t" (cond $en (.title_en | default .titulo) .titulo) "u" (printf "%s#%s" ("kql/" | relLangURL) .id) "k" (T "kind_kql") "s" (printf "%s %s %s" .produto .tabela (delimit (.tags | default slice) " "))) -}}
 {{- end -}}
 {{- range site.Taxonomies.tags -}}
-  {{- $items = $items | append (dict "t" (printf "#%s" (.Page.Title | lower)) "u" .Page.RelPermalink "k" "tema" "s" "") -}}
+  {{- $items = $items | append (dict "t" (printf "#%s" (.Page.Title | lower)) "u" .Page.RelPermalink "k" (T "kind_topic") "s" "") -}}
 {{- end -}}
 {{- $items | jsonify -}}

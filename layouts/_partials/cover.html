@@ -1,0 +1,22 @@
+{{- /* Capa gerada a partir do título: mesma entrada, mesmo desenho. */ -}}
+{{- $h := hash.FNV32a .Title -}}
+{{- $hue := index (slice "#3df5c4" "#5b8cff" "#b48cff" "#ffc857" "#ff6b81") (mod $h 5) -}}
+{{- $pts := slice -}}
+{{- range $i := seq 0 8 -}}
+  {{- $x := add (add 24 (mul $i 66)) (mod (div $h (add 1 (mul $i 7))) 40) -}}
+  {{- $y := add 36 (mod (div $h (add 3 (mul $i 13))) 148) -}}
+  {{- $pts = $pts | append (dict "x" $x "y" $y) -}}
+{{- end -}}
+<svg class="cover" viewBox="0 0 600 220" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="g{{ $h }}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{{ $hue }}" stop-opacity=".30"/><stop offset="1" stop-color="#5b8cff" stop-opacity=".04"/></linearGradient>
+    <pattern id="p{{ $h }}" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0v24" fill="none" stroke="{{ $hue }}" stroke-opacity=".10"/></pattern>
+  </defs>
+  <rect width="600" height="220" fill="#0a101a"/>
+  <rect width="600" height="220" fill="url(#p{{ $h }})"/>
+  <rect width="600" height="220" fill="url(#g{{ $h }})"/>
+  <circle cx="{{ add 120 (mod $h 360) }}" cy="{{ add 40 (mod (div $h 9) 140) }}" r="{{ add 50 (mod (div $h 5) 60) }}" fill="none" stroke="{{ $hue }}" stroke-opacity=".28"/>
+  <circle cx="{{ add 120 (mod $h 360) }}" cy="{{ add 40 (mod (div $h 9) 140) }}" r="{{ add 86 (mod (div $h 5) 60) }}" fill="none" stroke="{{ $hue }}" stroke-opacity=".12" stroke-dasharray="4 8"/>
+  <polyline fill="none" stroke="{{ $hue }}" stroke-opacity=".55" stroke-width="1.200" points="{{ range $pts }}{{ .x }},{{ .y }} {{ end }}"/>
+  {{ range $i, $p := $pts }}<circle cx="{{ $p.x }}" cy="{{ $p.y }}" r="{{ cond (eq (mod $i 3) 0) 5 3 }}" fill="{{ cond (eq (mod $i 3) 0) $hue "#0a101a" }}" stroke="{{ $hue }}" stroke-width="1.500"/>{{ end }}
+</svg>

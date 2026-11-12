@@ -4,7 +4,7 @@
   <div class="wrap about">
     <div class="prose">{{ .Content }}</div>
     <aside class="idcard">
-      {{ with site.Params.photo }}<img src="{{ . | relURL }}" alt="Foto de {{ site.Params.author }}" width="96" height="96">{{ else }}<div class="idph">{{ partial "icon.html" "shield" }}</div>{{ end }}
+      {{ with site.Params.photo }}<img src="{{ . | relURL }}" alt="{{ T "photo_alt" }} {{ site.Params.author }}" width="96" height="96">{{ else }}<div class="idph">{{ partial "icon.html" "shield" }}</div>{{ end }}
       <p class="foot-name">{{ site.Params.author }}</p>
       <p class="muted">{{ site.Params.bio }}</p>
       {{ partial "social.html" . }}

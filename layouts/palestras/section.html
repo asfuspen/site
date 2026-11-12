@@ -1,20 +1,20 @@
 {{ define "main" }}
-{{ partial "pagehead.html" (dict "eyebrow" "// palestras" "title" .Title "lead" .Content) }}
+{{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (.Title | lower)) "title" .Title "lead" .Content) }}
 <section class="block tight">
   <div class="wrap narrow">
     {{ with hugo.Data.palestras }}
     <ol class="timeline">
       {{ range sort . "data" "desc" }}
       <li class="reveal">
-        <p class="mono when">{{ .data | time.Format "02 Jan 2006" }}{{ with .local }} · {{ . }}{{ end }}</p>
+        <p class="mono when">{{ .data | time.Format ":date_medium" }}{{ with .local }} · {{ . }}{{ end }}</p>
         <h3>{{ .titulo }}</h3>
         <p class="muted">{{ .evento }}</p>
-        <p class="links mono">{{ with .slides }}<a href="{{ . }}" target="_blank" rel="noopener">slides</a>{{ end }}{{ with .video }}<a href="{{ . }}" target="_blank" rel="noopener">gravação</a>{{ end }}</p>
+        <p class="links mono">{{ with .slides }}<a href="{{ . }}" target="_blank" rel="noopener">{{ T "slides" }}</a>{{ end }}{{ with .video }}<a href="{{ . }}" target="_blank" rel="noopener">{{ T "recording" }}</a>{{ end }}</p>
       </li>
       {{ end }}
     </ol>
     {{ else }}
-    <div class="callout"><div><p class="eyebrow mono">// em breve</p><h2>A primeira palestra está a caminho</h2><p class="muted">Assim que houver eventos confirmados, eles aparecem aqui com slides e gravações.</p></div></div>
+    <div class="callout"><div><p class="eyebrow mono">// {{ T "soon" }}</p><h2>{{ T "talks_soon_title" }}</h2><p class="muted">{{ T "talks_soon_text" }}</p></div></div>
     {{ end }}
   </div>
 </section>

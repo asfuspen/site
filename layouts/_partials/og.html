@@ -1,0 +1,12 @@
+{{- /* Gera a imagem de compartilhamento (1200x630) com o título da página. */ -}}
+{{- $base := resources.Get "img/og-base.png" -}}
+{{- $bold := resources.Get "fonts/SpaceGrotesk_700Bold.ttf" -}}
+{{- $mono := resources.Get "fonts/JetBrainsMono_500Medium.ttf" -}}
+{{- $title := cond .IsHome site.Params.headline .Title -}}
+{{- $kicker := cond .IsHome site.Params.description (cond (eq .Section "posts") (printf "// blog · %s" (.Date | time.Format ":date_medium")) (printf "// %s" (.Section | default "site"))) -}}
+{{- $size := cond (gt (strings.RuneCount $title) 48) 58 72 -}}
+{{- $img := $base | images.Filter
+    (images.Text $title (dict "color" "#e8eef8" "size" $size "linespacing" 14 "x" 80 "y" 210 "font" $bold))
+    (images.Text (cond .IsHome "" $kicker) (dict "color" "#3df5c4" "size" 26 "x" 80 "y" 150 "font" $mono)) -}}
+{{- $img = $img | resources.Copy (printf "og/%s.png" (.RelPermalink | crypto.MD5)) -}}
+{{- return $img -}}

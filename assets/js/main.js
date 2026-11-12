@@ -2,6 +2,9 @@
   "use strict";
   var doc = document, root = doc.documentElement;
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var L = {};
+  try { L = JSON.parse(doc.body.dataset.t || "{}"); } catch (e) {}
+  var t = function (k, d) { return L[k] || d; };
 
   // Tema claro e escuro
   doc.querySelectorAll("[data-toggle-theme]").forEach(function (b) {
@@ -134,15 +137,16 @@
   doc.querySelectorAll(".prose pre").forEach(function (pre) {
     var holder = pre.closest(".highlight") || pre;
     var code = pre.querySelector("code");
-    var lang = code && (code.dataset.lang || (code.className.match(/language-([\w-]+)/) || [])[1]) || "código";
+    var lang = code && (code.dataset.lang || (code.className.match(/language-([\w-]+)/) || [])[1]) || t("code", "código");
+    if (lang === "kusto") lang = "kql";
     var box = doc.createElement("div"); box.className = "codeblock";
     var top = doc.createElement("div"); top.className = "codebar mono";
     var label = doc.createElement("span"); label.textContent = lang;
-    var btn = doc.createElement("button"); btn.type = "button"; btn.textContent = "copiar";
+    var btn = doc.createElement("button"); btn.type = "button"; btn.textContent = t("copy", "copiar");
     btn.addEventListener("click", function () {
       copy((code || pre).innerText).then(function () {
-        btn.textContent = "copiado";
-        setTimeout(function () { btn.textContent = "copiar"; }, 1600);
+        btn.textContent = t("copied", "copiado");
+        setTimeout(function () { btn.textContent = t("copy", "copiar"); }, 1600);
       });
     });
     top.append(label, btn);
@@ -163,11 +167,48 @@
   doc.querySelectorAll("[data-copy-link]").forEach(function (b) {
     b.addEventListener("click", function () {
       copy(b.dataset.copyLink).then(function () {
-        var old = b.textContent; b.textContent = "link copiado";
+        var old = b.textContent; b.textContent = t("linkCopied", "link copiado");
         setTimeout(function () { b.textContent = old; }, 1600);
       });
     });
   });
+
+  // Brilho que acompanha o cursor no topo
+  var hero = doc.querySelector("[data-spot]");
+  if (hero && !reduce && matchMedia("(hover: hover)").matches) {
+    hero.addEventListener("pointermove", function (e) {
+      var r = hero.getBoundingClientRect();
+      hero.style.setProperty("--sx", e.clientX - r.left + "px");
+      hero.style.setProperty("--sy", e.clientY - r.top + "px");
+      hero.classList.add("spot");
+    });
+    hero.addEventListener("pointerleave", function () { hero.classList.remove("spot"); });
+  }
+
+  // Biblioteca KQL: filtro por texto e por produto
+  var kql = doc.querySelector("[data-kql]");
+  if (kql) {
+    var kin = kql.querySelector("input"), kitems = kql.querySelectorAll(".kql"), kcount = kql.querySelector("[data-kql-count]"),
+      kempty = kql.querySelector("[data-kql-empty]"), kchips = kql.querySelectorAll("[data-prod]:not(.kql)"), prod = "";
+    var strip = function (v) { return (v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); };
+    var apply = function () {
+      var terms = strip(kin.value).split(/\s+/).filter(Boolean), n = 0;
+      kitems.forEach(function (el) {
+        var hay = strip(el.dataset.text + " " + el.querySelector("pre").textContent);
+        var ok = (!prod || el.dataset.prod === prod) && terms.every(function (w) { return hay.indexOf(w) > -1; });
+        el.hidden = !ok; if (ok) { n++; el.classList.add("in"); }
+      });
+      kcount.textContent = n; kempty.hidden = n > 0;
+    };
+    kin.addEventListener("input", apply);
+    kchips.forEach(function (c) {
+      c.addEventListener("click", function () {
+        prod = c.dataset.prod;
+        kchips.forEach(function (o) { o.classList.toggle("on", o === c); });
+        apply();
+      });
+    });
+  }
 
   // Destaque da seção atual no sumário
   var tocLinks = doc.querySelectorAll(".toc a");
@@ -201,7 +242,7 @@
       list.textContent = "";
       if (!shown.length) {
         var li = doc.createElement("li"); li.className = "none";
-        li.textContent = data ? "Nada encontrado para esse termo." : "Carregando...";
+        li.textContent = data ? t("none", "Nada encontrado.") : t("loading", "Carregando...");
         list.append(li); return;
       }
       shown.forEach(function (it, idx) {

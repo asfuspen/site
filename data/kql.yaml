@@ -1,0 +1,124 @@
+# Biblioteca de consultas KQL. Campos: id, titulo, title_en, descricao, desc_en, produto, tabela, tags, query.
+- id: "falhas-login-usuario-ip"
+  titulo: "Falhas de login por usuário e IP"
+  title_en: "Failed sign-ins by user and IP"
+  descricao: "Lista as combinações de conta e endereço IP com mais falhas de autenticação nas últimas 24 horas."
+  desc_en: "Lists the account and IP address pairs with the most authentication failures in the last 24 hours."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "entra id"]
+  query: |
+    SigninLogs
+    | where TimeGenerated > ago(24h)
+    | where ResultType != "0"
+    | summarize Falhas = count() by UserPrincipalName, IPAddress
+    | top 20 by Falhas desc
+- id: "password-spray"
+  titulo: "Possível password spray"
+  title_en: "Possible password spray"
+  descricao: "Encontra endereços IP que falharam o login em muitas contas diferentes dentro da mesma hora."
+  desc_en: "Finds IP addresses that failed to sign in to many different accounts within the same hour."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "força bruta"]
+  query: |
+    SigninLogs
+    | where TimeGenerated > ago(1d)
+    | where ResultType in ("50126", "50053")
+    | summarize Usuarios = dcount(UserPrincipalName), Tentativas = count()
+        by IPAddress, bin(TimeGenerated, 1h)
+    | where Usuarios >= 10
+    | order by Usuarios desc
+- id: "autenticacao-legada"
+  titulo: "Logins com autenticação legada"
+  title_en: "Sign-ins using legacy authentication"
+  descricao: "Mostra logins bem-sucedidos feitos por clientes que não são navegador nem aplicativos modernos, candidatos a bloqueio por acesso condicional."
+  desc_en: "Shows successful sign-ins from clients other than browsers and modern apps, candidates for a Conditional Access block."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "acesso condicional"]
+  query: |
+    SigninLogs
+    | where TimeGenerated > ago(7d)
+    | where ResultType == "0"
+    | where ClientAppUsed !in ("Browser", "Mobile Apps and Desktop clients")
+    | summarize Logins = count() by UserPrincipalName, ClientAppUsed, AppDisplayName
+    | order by Logins desc
+- id: "novos-membros-em-funcoes"
+  titulo: "Novos membros em funções administrativas"
+  title_en: "New members added to admin roles"
+  descricao: "Audita quem adicionou quem a uma função do Entra ID nos últimos 7 dias."
+  desc_en: "Audits who added whom to an Entra ID role in the last 7 days."
+  produto: "Sentinel"
+  tabela: "AuditLogs"
+  tags: ["identidade", "privilégio"]
+  query: |
+    AuditLogs
+    | where TimeGenerated > ago(7d)
+    | where OperationName == "Add member to role"
+    | extend Autor = tostring(InitiatedBy.user.userPrincipalName)
+    | extend Alvo = tostring(TargetResources[0].userPrincipalName)
+    | extend Funcao = tostring(TargetResources[0].modifiedProperties[1].newValue)
+    | project TimeGenerated, Autor, Alvo, Funcao, Result
+    | order by TimeGenerated desc
+- id: "regras-encaminhamento-caixa"
+  titulo: "Regras de encaminhamento em caixas de correio"
+  title_en: "Mailbox forwarding rules"
+  descricao: "Detecta criação ou alteração de regras de caixa de entrada que encaminham ou redirecionam mensagens, técnica comum após comprometimento de conta."
+  desc_en: "Detects inbox rules created or changed to forward or redirect messages, a common technique after account compromise."
+  produto: "Sentinel"
+  tabela: "OfficeActivity"
+  tags: ["e-mail", "exfiltração"]
+  query: |
+    OfficeActivity
+    | where TimeGenerated > ago(7d)
+    | where Operation in ("New-InboxRule", "Set-InboxRule")
+    | where Parameters has_any ("ForwardTo", "RedirectTo", "ForwardAsAttachmentTo")
+    | project TimeGenerated, UserId, ClientIP, Operation, Parameters
+    | order by TimeGenerated desc
+- id: "powershell-codificado"
+  titulo: "PowerShell com comando codificado"
+  title_en: "PowerShell with encoded command"
+  descricao: "Localiza execuções de PowerShell com comando em Base64, usado com frequência para ocultar a intenção do script."
+  desc_en: "Finds PowerShell executions with a Base64 command, often used to hide what the script does."
+  produto: "Defender XDR"
+  tabela: "DeviceProcessEvents"
+  tags: ["endpoint", "execução"]
+  query: |
+    DeviceProcessEvents
+    | where Timestamp > ago(7d)
+    | where FileName in~ ("powershell.exe", "pwsh.exe")
+    | where ProcessCommandLine contains "-enc"
+        or ProcessCommandLine contains "FromBase64String"
+    | project Timestamp, DeviceName, AccountName, ProcessCommandLine, InitiatingProcessFileName
+    | order by Timestamp desc
+- id: "office-iniciando-scripts"
+  titulo: "Aplicativos do Office iniciando interpretadores"
+  title_en: "Office apps spawning script interpreters"
+  descricao: "Mostra Word, Excel, PowerPoint ou Outlook iniciando shells e interpretadores de script, padrão típico de documentos maliciosos."
+  desc_en: "Shows Word, Excel, PowerPoint or Outlook launching shells and script interpreters, a typical pattern of malicious documents."
+  produto: "Defender XDR"
+  tabela: "DeviceProcessEvents"
+  tags: ["endpoint", "phishing"]
+  query: |
+    DeviceProcessEvents
+    | where Timestamp > ago(7d)
+    | where InitiatingProcessFileName in~ ("winword.exe", "excel.exe", "powerpnt.exe", "outlook.exe")
+    | where FileName in~ ("powershell.exe", "cmd.exe", "wscript.exe", "cscript.exe", "mshta.exe")
+    | project Timestamp, DeviceName, AccountName, InitiatingProcessFileName, FileName, ProcessCommandLine
+    | order by Timestamp desc
+- id: "phishing-entregue"
+  titulo: "Phishing entregue na caixa de entrada"
+  title_en: "Phishing delivered to the inbox"
+  descricao: "Conta as mensagens classificadas como phishing que mesmo assim foram entregues, por destinatário e domínio remetente."
+  desc_en: "Counts messages classified as phishing that were still delivered, by recipient and sender domain."
+  produto: "Defender XDR"
+  tabela: "EmailEvents"
+  tags: ["e-mail", "phishing"]
+  query: |
+    EmailEvents
+    | where Timestamp > ago(7d)
+    | where ThreatTypes has "Phish"
+    | where DeliveryAction == "Delivered"
+    | summarize Mensagens = count() by RecipientEmailAddress, SenderFromDomain
+    | order by Mensagens desc
