@@ -6,7 +6,7 @@
     </a>
     <nav class="nav" aria-label="Principal">
       {{ $cur := . }}
-      {{ range site.Menus.main }}
+      {{ range partial "menu.html" . }}
       <a href="{{ .URL }}"{{ if or ($cur.IsMenuCurrent "main" .) ($cur.HasMenuCurrent "main" .) }} aria-current="page"{{ end }}>{{ .Name }}</a>
       {{ end }}
     </nav>

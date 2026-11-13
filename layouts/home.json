@@ -1,5 +1,5 @@
 {{- $items := slice -}}
-{{- range site.Menus.main -}}
+{{- range partial "menu.html" . -}}
   {{- $items = $items | append (dict "t" .Name "u" .URL "k" (T "kind_page") "c" "page" "s" "") -}}
 {{- end -}}
 {{- range where site.RegularPages "Section" "posts" -}}
