@@ -13,6 +13,8 @@ Site pessoal de Alessandro Ferreira sobre cibersegurança, em português do Bras
 - Foco no ecossistema de segurança da Microsoft: Defender XDR, Sentinel, Entra ID, Purview, Intune, Azure. Temas gerais de segurança são bem-vindos quando têm aplicação prática.
 - Estrutura sugerida: introdução com o problema, contexto, passo a passo ou análise, conclusão e referências.
 - Toda afirmação factual precisa de fonte. Inclua a seção Referências com links para a documentação oficial (learn.microsoft.com) ou fontes primárias. Não invente comandos, cmdlets, nomes de tabelas, números de CVE nem estatísticas. Se não for possível confirmar algo, deixe fora.
+- Abra e leia cada página citada antes de escrever. Só afirme o que estiver no texto da fonte, e diga no artigo quando um número é ponto de partida seu e não valor oficial. Consultas que não foram executadas em ambiente real ficam com um marcador para o Alessandro validar.
+- Nomes de colunas calculadas e variáveis nas consultas ficam em inglês, porque o mesmo código aparece nas duas versões do site.
 - Não repita um tema que já existe em `content/posts/`.
 - Blocos de código devem declarar a linguagem (`kql`, `powershell`, `bash`).
 - Textos da interface ficam em `i18n/pt-br.yaml` e `i18n/en.yaml`. Ao criar um texto novo em um modelo, adicione a chave nos dois arquivos.

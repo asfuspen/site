@@ -7,7 +7,6 @@ summary: "Why this blog exists and what you will find here."
 categories: ["General"]
 tags: ["community", "microsoft-security"]
 nivel: "iniciante"
-featured: true
 ---
 
 This is the first post on the blog. It works as a sample of the post format and can be edited or removed at any time.
