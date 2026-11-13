@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="term" aria-label="{{ T "terminal_label" }}">
-      <div class="term-bar"><i></i><i></i><i></i><span class="mono">alessandro@sec: ~</span></div>
+      <div class="term-bar"><i></i><i></i><i></i><span class="mono">alessandro@sec: ~</span><span class="mono term-hint">{{ T "terminal_hint" }}</span></div>
       <div class="term-body mono" data-terminal>
         <p class="cmd"><span class="ps">$</span> <span data-type>whoami</span></p>
         <p class="out">{{ site.Params.author }}, {{ site.Params.headline | lower }}</p>
@@ -43,6 +43,7 @@
   </div>
 </section>
 
+{{ if ge (len $posts) 5 }}
 <section class="stats">
   <div class="wrap stats-grid">
     <a class="stat" href="{{ "posts/" | relLangURL }}"><b data-count="{{ len $posts }}">{{ len $posts }}</b><span>{{ cond (eq (len $posts) 1) (T "stat_posts_one") (T "stat_posts") }}</span></a>
@@ -52,6 +53,7 @@
     <a class="stat" href="{{ "tags/" | relLangURL }}"><b data-count="{{ len site.Taxonomies.tags }}">{{ len site.Taxonomies.tags }}</b><span>{{ T "stat_tags" }}</span></a>
   </div>
 </section>
+{{ end }}
 
 {{ with $featured }}
 <section class="block">
@@ -122,7 +124,7 @@
     <a class="mitre-strip reveal" href="{{ "mitre/" | relLangURL }}" aria-label="{{ T "mitre_open" }}">
       {{ range hugo.Data.mitre }}
       {{ $n := len (where $mitems "tatica" .id) }}
-      <span class="cell{{ if $n }} on{{ end }}" title="{{ index . site.Language.Lang | default .pt }}"><i style="--n: {{ $n }}"></i><b class="mono">{{ $n }}</b><em>{{ index . site.Language.Lang | default .pt }}</em></span>
+      {{ if $n }}<span class="cell on" title="{{ index . site.Language.Lang | default .pt }}"><i style="--n: {{ $n }}"></i><b class="mono">{{ $n }}</b><em>{{ index . site.Language.Lang | default .pt }}</em></span>{{ end }}
       {{ end }}
     </a>
   </div>
@@ -153,7 +155,7 @@
   </div>
 </section>
 
-{{ with site.Taxonomies.tags }}
+{{ if ge (len site.Taxonomies.tags) 6 }}{{ with site.Taxonomies.tags }}
 <section class="block">
   <div class="wrap">
     <p class="eyebrow mono">{{ T "eyebrow_topics" }}</p>
@@ -165,7 +167,7 @@
     </ul>
   </div>
 </section>
-{{ end }}
+{{ end }}{{ end }}
 
 <section class="block">
   <div class="wrap">

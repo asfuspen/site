@@ -95,13 +95,13 @@
     var S = en ? {
       help: [["help", "show this list"], ["ls [posts|kql|tags]", "list content"], ["open <name|n>", "open a page, post or query"],
         ["kql <term>", "search the KQL library"], ["mitre", "open the ATT&CK map"], ["whoami", "who writes here"],
-        ["theme light|dark", "switch the theme"], ["lang", "switch language"], ["social", "profiles"], ["clear", "clear the screen"]],
+        ["theme light|dark", "switch the theme"], ["lang", "switch language"], ["social | linkedin | github", "profiles"], ["clear", "clear the screen"]],
       nf: "command not found. Type help.", none: "nothing found.", opening: "opening", usage: "usage:", pages: "pages", theme: "theme set to",
       sudo: "nice try. This incident will be reported.", loading: "loading...", err: "could not load the index.", more: "and more. Refine the search."
     } : {
       help: [["help", "mostra esta lista"], ["ls [posts|kql|tags]", "lista o conteúdo"], ["open <nome|n>", "abre uma página, post ou consulta"],
         ["kql <termo>", "busca na biblioteca KQL"], ["mitre", "abre o mapa ATT&CK"], ["whoami", "quem escreve aqui"],
-        ["tema claro|escuro", "troca o tema"], ["lang", "troca o idioma"], ["social", "perfis"], ["clear", "limpa a tela"]],
+        ["tema claro|escuro", "troca o tema"], ["lang", "troca o idioma"], ["social | linkedin | github", "perfis"], ["clear", "limpa a tela"]],
       nf: "comando não encontrado. Digite help.", none: "nada encontrado.", opening: "abrindo", usage: "uso:", pages: "páginas", theme: "tema alterado para",
       sudo: "boa tentativa. Este incidente será reportado.", loading: "carregando...", err: "não foi possível carregar o índice.", more: "e mais. Refine a busca."
     };
@@ -160,6 +160,11 @@
         if (alt) go({ t: alt.getAttribute("hreflang"), u: alt.href }); else put(S.none);
         return;
       }
+      if (cmd === "linkedin" || cmd === "github") {
+        var prof = doc.querySelector('a[rel~=me][href*="' + cmd + '."]');
+        if (prof) { put(S.opening + " " + cmd + "...", "out ok"); window.open(prof.href, "_blank", "noopener"); } else put(S.none);
+        return;
+      }
       if (cmd === "social") {
         var seen = {};
         doc.querySelectorAll("a[rel~=me]").forEach(function (a) {
@@ -198,7 +203,7 @@
         } else put(parts[0] + ": " + S.nf);
       }).catch(function () { wait.remove(); put(S.err); });
     };
-    var names = ["help", "ls", "open", "kql", "mitre", "whoami", en ? "theme" : "tema", "lang", "social", "clear", "date"];
+    var names = ["help", "ls", "open", "kql", "mitre", "whoami", en ? "theme" : "tema", "lang", "social", "linkedin", "github", "clear", "date"];
     tform.addEventListener("submit", function (e) {
       e.preventDefault();
       var v = tin.value.trim();

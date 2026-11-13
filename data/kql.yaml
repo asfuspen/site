@@ -14,8 +14,8 @@
     SigninLogs
     | where TimeGenerated > ago(24h)
     | where ResultType != "0"
-    | summarize Falhas = count() by UserPrincipalName, IPAddress
-    | top 20 by Falhas desc
+    | summarize Failures = count() by UserPrincipalName, IPAddress
+    | top 20 by Failures desc
 - id: "password-spray"
   titulo: "Possível password spray"
   title_en: "Possible password spray"
@@ -30,10 +30,10 @@
     SigninLogs
     | where TimeGenerated > ago(1d)
     | where ResultType in ("50126", "50053")
-    | summarize Usuarios = dcount(UserPrincipalName), Tentativas = count()
+    | summarize Users = dcount(UserPrincipalName), Attempts = count()
         by IPAddress, bin(TimeGenerated, 1h)
-    | where Usuarios >= 10
-    | order by Usuarios desc
+    | where Users >= 10
+    | order by Users desc
 - id: "autenticacao-legada"
   titulo: "Logins por tipo de cliente, para achar autenticação legada"
   title_en: "Sign-ins by client app, to find legacy authentication"
@@ -48,7 +48,7 @@
     SigninLogs
     | where TimeGenerated > ago(7d)
     | where ResultType == "0"
-    | summarize Logins = count(), Usuarios = dcount(UserPrincipalName) by ClientAppUsed
+    | summarize Logins = count(), Users = dcount(UserPrincipalName) by ClientAppUsed
     | order by Logins desc
 - id: "novos-membros-em-funcoes"
   titulo: "Novos membros em funções administrativas"
@@ -65,18 +65,18 @@
     AuditLogs
     | where TimeGenerated > ago(7d)
     | where OperationName == "Add member to role"
-    | extend Autor = tostring(InitiatedBy.user.userPrincipalName)
-    | mv-apply Recurso = TargetResources on (
-        where Recurso.type in~ ("User", "ServicePrincipal")
-        | extend Alvo = iff(Recurso.type =~ "ServicePrincipal",
-            tostring(Recurso.displayName), tostring(Recurso.userPrincipalName)),
-            Propriedades = Recurso.modifiedProperties
+    | extend Actor = tostring(InitiatedBy.user.userPrincipalName)
+    | mv-apply Resource = TargetResources on (
+        where Resource.type in~ ("User", "ServicePrincipal")
+        | extend Target = iff(Resource.type =~ "ServicePrincipal",
+            tostring(Resource.displayName), tostring(Resource.userPrincipalName)),
+            Properties = Resource.modifiedProperties
       )
-    | mv-apply Propriedade = Propriedades on (
-        where Propriedade.displayName =~ "Role.DisplayName"
-        | extend Funcao = trim('"', tostring(Propriedade.newValue))
+    | mv-apply Property = Properties on (
+        where Property.displayName =~ "Role.DisplayName"
+        | extend Role = trim('"', tostring(Property.newValue))
       )
-    | project TimeGenerated, Autor, Alvo, Funcao, Result
+    | project TimeGenerated, Actor, Target, Role, Result
     | order by TimeGenerated desc
 - id: "regras-encaminhamento-caixa"
   titulo: "Regras de encaminhamento em caixas de correio"
@@ -117,13 +117,12 @@
 - id: "office-iniciando-scripts"
   titulo: "Aplicativos do Office iniciando interpretadores"
   title_en: "Office apps spawning script interpreters"
-  descricao: "Mostra Word, Excel, PowerPoint ou Outlook iniciando shells e interpretadores de script, padrão típico de documentos maliciosos."
-  desc_en: "Shows Word, Excel, PowerPoint or Outlook launching shells and script interpreters, a typical pattern of malicious documents."
+  descricao: "Mostra Word, Excel, PowerPoint ou Outlook iniciando shells e interpretadores de script, comportamento compatível com a abertura de um arquivo malicioso. A consulta não indica como o arquivo chegou ao usuário."
+  desc_en: "Shows Word, Excel, PowerPoint or Outlook launching shells and script interpreters, behavior consistent with a malicious file being opened. The query does not show how the file reached the user."
   produto: "Defender XDR"
   tabela: "DeviceProcessEvents"
-  tags: ["endpoint", "phishing"]
+  tags: ["endpoint", "execução"]
   mitre:
-    - { tatica: "TA0001", tecnica: "T1566.001", nome: "Spearphishing Attachment" }
     - { tatica: "TA0002", tecnica: "T1204.002", nome: "Malicious File" }
   query: |
     DeviceProcessEvents
@@ -135,8 +134,8 @@
 - id: "phishing-entregue"
   titulo: "Phishing entregue na caixa de entrada"
   title_en: "Phishing delivered to the inbox"
-  descricao: "Conta as mensagens classificadas como phishing que mesmo assim foram entregues, por destinatário e domínio remetente."
-  desc_en: "Counts messages classified as phishing that were still delivered, by recipient and sender domain."
+  descricao: "Conta as mensagens classificadas como phishing que mesmo assim foram entregues na caixa de entrada ou em uma pasta do usuário, por destinatário e domínio remetente."
+  desc_en: "Counts messages classified as phishing that were still delivered to the inbox or a user folder, by recipient and sender domain."
   produto: "Defender XDR"
   tabela: "EmailEvents"
   tags: ["e-mail", "phishing"]
@@ -147,5 +146,6 @@
     | where Timestamp > ago(7d)
     | where ThreatTypes has "Phish"
     | where DeliveryAction == "Delivered"
-    | summarize Mensagens = count() by RecipientEmailAddress, SenderFromDomain
-    | order by Mensagens desc
+    | where DeliveryLocation == "Inbox/Folder"
+    | summarize Messages = count() by RecipientEmailAddress, SenderFromDomain
+    | order by Messages desc
