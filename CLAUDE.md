@@ -16,6 +16,7 @@ Site pessoal de Alessandro Ferreira sobre cibersegurança, em português do Bras
 - Abra e leia cada página citada antes de escrever. Só afirme o que estiver no texto da fonte, e diga no artigo quando um número é ponto de partida seu e não valor oficial. Consultas que não foram executadas em ambiente real ficam com um marcador para o Alessandro validar.
 - Nomes de colunas calculadas e variáveis nas consultas ficam em inglês, porque o mesmo código aparece nas duas versões do site.
 - Não repita um tema que já existe em `content/posts/`.
+- Para escolher o tema e encontrar referências, consulte `FONTES.md`. Fontes de pauta (notícias, blogs, redes sociais) servem para descobrir assuntos; o fato só entra no post depois de confirmado em fonte primária, e links da seção "Não conferidos" não podem ser citados.
 - Blocos de código devem declarar a linguagem (`kql`, `powershell`, `bash`).
 - Textos da interface ficam em `i18n/pt-br.yaml` e `i18n/en.yaml`. Ao criar um texto novo em um modelo, adicione a chave nos dois arquivos.
 - Não escreva na primeira pessoa experiências que o Alessandro não teve. Deixe marcadores `<!-- Alessandro: acrescente aqui sua experiência -->` onde um relato pessoal enriqueceria o texto.
