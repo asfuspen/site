@@ -223,3 +223,47 @@
     | where DeliveryLocation == "Inbox/Folder"
     | summarize Messages = count() by RecipientEmailAddress, SenderFromDomain
     | order by Messages desc
+- id: "uso-codigo-dispositivo"
+  titulo: "Uso do fluxo de código de dispositivo por aplicativo"
+  title_en: "Device code flow usage by application"
+  descricao: "Mede, nos últimos 30 dias, quais aplicativos usam o fluxo de código de dispositivo, com logins, sucessos e usuários distintos, para planejar o bloqueio com Acesso Condicional."
+  desc_en: "Measures which applications used the device code flow in the last 30 days, with sign-ins, successes and distinct users, to plan a Conditional Access block."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "entra id", "phishing"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1566.002", nome: "Spearphishing Link" }
+  query: |
+    SigninLogs
+    | where TimeGenerated > ago(30d)
+    | where AuthenticationProtocol == "deviceCode"
+    | summarize SignIns = count(), Successes = countif(ResultType == "0"),
+        Users = dcount(UserPrincipalName), FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated)
+        by AppDisplayName
+    | order by SignIns desc
+- id: "primeiro-uso-codigo-dispositivo"
+  titulo: "Primeiro login por código de dispositivo do usuário"
+  title_en: "User's first device code sign-in"
+  descricao: "Lista logins concluídos pelo fluxo de código de dispositivo nas últimas 24 horas de usuários que não usaram o fluxo nos 30 dias anteriores."
+  desc_en: "Lists sign-ins completed through the device code flow in the last 24 hours by users who did not use the flow in the previous 30 days."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "entra id", "phishing"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1566.002", nome: "Spearphishing Link" }
+    - { tatica: "TA0006", tecnica: "T1528", nome: "Steal Application Access Token" }
+  query: |
+    let Lookback = 30d;
+    let KnownUsers = SigninLogs
+        | where TimeGenerated between (ago(Lookback) .. ago(1d))
+        | where AuthenticationProtocol == "deviceCode"
+        | where ResultType == "0"
+        | distinct UserPrincipalName;
+    SigninLogs
+    | where TimeGenerated > ago(1d)
+    | where AuthenticationProtocol == "deviceCode"
+    | where ResultType == "0"
+    | where UserPrincipalName !in (KnownUsers)
+    | project TimeGenerated, UserPrincipalName, AppDisplayName, IPAddress,
+        RiskLevelDuringSignIn, ConditionalAccessStatus
+    | order by TimeGenerated desc
