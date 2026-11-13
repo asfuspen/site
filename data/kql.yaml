@@ -118,6 +118,57 @@
     | where Parameters has_any ("ForwardTo", "RedirectTo")
     | project TimeGenerated, UserId, ClientIP, Operation, Parameters
     | order by TimeGenerated desc
+- id: "encaminhamento-externo"
+  titulo: "Encaminhamento de e-mail para fora da organização"
+  title_en: "Email forwarding outside the organization"
+  descricao: "Extrai o destino de regras de caixa de entrada e de encaminhamentos de caixa e mantém só os que ficam fora dos domínios informados em InternalDomains. Troque contoso.com pelos seus domínios."
+  desc_en: "Extracts the destination of inbox rules and mailbox forwarding and keeps only those outside the domains listed in InternalDomains. Replace contoso.com with your domains."
+  produto: "Sentinel"
+  tabela: "OfficeActivity"
+  tags: ["e-mail", "exfiltração"]
+  mitre:
+    - { tatica: "TA0009", tecnica: "T1114.003", nome: "Email Forwarding Rule" }
+  query: |
+    let InternalDomains = dynamic(["contoso.com"]);
+    OfficeActivity
+    | where TimeGenerated > ago(7d)
+    | where OfficeWorkload =~ "Exchange"
+    | where Operation in ("New-InboxRule", "Set-InboxRule", "Set-Mailbox")
+    | where Parameters has_any ("ForwardTo", "RedirectTo", "ForwardAsAttachmentTo", "ForwardingSmtpAddress")
+    | mv-apply Parameter = todynamic(Parameters) on (
+        summarize Parsed = make_bag(bag_pack(tostring(Parameter.Name), Parameter.Value))
+      )
+    | extend Destination = tolower(tostring(coalesce(
+        Parsed.ForwardTo, Parsed.RedirectTo, Parsed.ForwardAsAttachmentTo, Parsed.ForwardingSmtpAddress)))
+    | extend Destination = trim_start(@"smtp:", Destination)
+    | where isnotempty(Destination)
+    | mv-expand Target = split(Destination, ";") to typeof(string)
+    | extend TargetDomain = tostring(split(Target, "@")[1])
+    | where TargetDomain !in (InternalDomains)
+    | project TimeGenerated, UserId, ClientIP, Operation, Target, Parameters
+    | order by TimeGenerated desc
+- id: "regras-que-escondem-mensagens"
+  titulo: "Regras de caixa de entrada que escondem mensagens"
+  title_en: "Inbox rules that hide messages"
+  descricao: "Encontra regras que apagam, movem ou marcam mensagens como lidas e que filtram por palavras de alerta ou não têm filtro nenhum."
+  desc_en: "Finds rules that delete, move or mark messages as read and that filter on alert words or have no filter at all."
+  produto: "Sentinel"
+  tabela: "OfficeActivity"
+  tags: ["e-mail", "furtividade"]
+  mitre:
+    - { tatica: "TA0005", tecnica: "T1564.008", nome: "Email Hiding Rules" }
+  query: |
+    let Keywords = dynamic(["phishing", "spam", "suspicious", "malicious", "hijacked", "helpdesk"]);
+    OfficeActivity
+    | where TimeGenerated > ago(7d)
+    | where OfficeWorkload =~ "Exchange"
+    | where Operation in ("New-InboxRule", "Set-InboxRule")
+    | where Parameters has_any ("DeleteMessage", "MoveToFolder", "MarkAsRead")
+    | extend HasFilter = Parameters has_any ("SubjectContainsWords", "BodyContainsWords", "SubjectOrBodyContainsWords")
+    | extend HasAlertKeyword = Parameters has_any (Keywords)
+    | where HasAlertKeyword or not(HasFilter)
+    | project TimeGenerated, UserId, ClientIP, Operation, HasFilter, HasAlertKeyword, Parameters
+    | order by TimeGenerated desc
 - id: "powershell-codificado"
   titulo: "PowerShell com comando codificado"
   title_en: "PowerShell with encoded command"

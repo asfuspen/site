@@ -7,7 +7,7 @@ summary: "O que é password spray, por que as proteções nativas não mostram a
 categories: ["Detecção"]
 tags: ["kql", "sentinel", "entra id", "identidade"]
 nivel: "intermediario"
-featured: true
+series: ["Detecções com KQL"]
 mitre:
   - { tatica: "TA0006", tecnica: "T1110.003", nome: "Password Spraying" }
 ---
