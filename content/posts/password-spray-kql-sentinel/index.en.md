@@ -7,7 +7,7 @@ summary: "What password spray is, why the built-in protections do not show the a
 categories: ["Detection"]
 tags: ["kql", "sentinel", "entra id", "identity"]
 nivel: "intermediario"
-featured: true
+series: ["KQL detections"]
 mitre:
   - { tatica: "TA0006", tecnica: "T1110.003", nome: "Password Spraying" }
 ---
