@@ -34,6 +34,29 @@
         by IPAddress, bin(TimeGenerated, 1h)
     | where Users >= 10
     | order by Users desc
+- id: "login-apos-spray"
+  titulo: "Logins concluídos ou barrados no MFA a partir de IPs com spray"
+  title_en: "Sign-ins completed or stopped at MFA from spraying IPs"
+  descricao: "Parte dos IPs com falhas em muitas contas e lista os logins desses IPs que tiveram sucesso ou pararam na exigência de MFA, para separar as contas que precisam de atenção imediata."
+  desc_en: "Starts from the IPs failing on many accounts and lists their sign-ins that succeeded or stopped at the MFA requirement, to single out the accounts that need immediate attention."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "força bruta"]
+  mitre:
+    - { tatica: "TA0006", tecnica: "T1110.003", nome: "Password Spraying" }
+  query: |
+    let SuspectIPs = SigninLogs
+        | where TimeGenerated > ago(1d)
+        | where ResultType in ("50126", "50053")
+        | summarize Users = dcount(UserPrincipalName) by IPAddress, bin(TimeGenerated, 1h)
+        | where Users >= 10
+        | distinct IPAddress;
+    SigninLogs
+    | where TimeGenerated > ago(1d)
+    | where IPAddress in (SuspectIPs)
+    | where ResultType in ("0", "50074", "50076")
+    | project TimeGenerated, UserPrincipalName, IPAddress, ResultType, ResultDescription, AppDisplayName
+    | order by TimeGenerated asc
 - id: "autenticacao-legada"
   titulo: "Logins por tipo de cliente, para achar autenticação legada"
   title_en: "Sign-ins by client app, to find legacy authentication"

@@ -7,7 +7,6 @@ summary: "Por que este blog existe e o que você vai encontrar por aqui."
 categories: ["Geral"]
 tags: ["comunidade", "microsoft-security"]
 nivel: "iniciante"
-featured: true
 ---
 
 Este é o primeiro post do blog. Ele serve de exemplo do formato dos artigos e pode ser editado ou apagado à vontade.
