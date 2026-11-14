@@ -223,3 +223,22 @@
     | where DeliveryLocation == "Inbox/Folder"
     | summarize Messages = count() by RecipientEmailAddress, SenderFromDomain
     | order by Messages desc
+- id: "impacto-regras-asr-auditoria"
+  titulo: "Impacto das regras ASR em modo auditoria"
+  title_en: "Impact of ASR rules in audit mode"
+  descricao: "Agrupa os eventos de regras ASR em auditoria dos últimos 30 dias por regra e processo de origem, para decidir o que pode ir para bloqueio e o que precisa de exclusão."
+  desc_en: "Groups audit-mode ASR rule events from the last 30 days by rule and initiating process, to decide what can move to block and what needs an exclusion."
+  produto: "Defender XDR"
+  tabela: "DeviceEvents"
+  tags: ["endpoint", "asr", "hardening"]
+  mitre:
+    - { tatica: "TA0006", tecnica: "T1003.001", nome: "LSASS Memory" }
+    - { tatica: "TA0003", tecnica: "T1546.003", nome: "Windows Management Instrumentation Event Subscription" }
+  query: |
+    DeviceEvents
+    | where Timestamp > ago(30d)
+    | where ActionType startswith "Asr" and ActionType endswith "Audited"
+    | summarize Events = count(), Devices = dcount(DeviceName),
+        SampleFiles = make_set(FileName, 5), SampleFolders = make_set(FolderPath, 5)
+        by ActionType, InitiatingProcessFileName
+    | order by Events desc
