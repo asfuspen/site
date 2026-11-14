@@ -267,3 +267,38 @@
     | project TimeGenerated, UserPrincipalName, AppDisplayName, IPAddress,
         RiskLevelDuringSignIn, ConditionalAccessStatus
     | order by TimeGenerated desc
+- id: "adcs-eventos-defender"
+  titulo: "Eventos do AD CS vistos pelo sensor do Defender for Identity"
+  title_en: "AD CS events seen by the Defender for Identity sensor"
+  descricao: "Resume por tipo de evento, conta e dispositivo os eventos de emissão de certificado registrados pelo sensor instalado no servidor AD CS. Serve para conhecer o volume normal antes de procurar exceções."
+  desc_en: "Summarizes by event type, account and device the certificate issuance events recorded by the sensor installed on the AD CS server. Useful to learn the normal volume before looking for exceptions."
+  produto: "Defender XDR"
+  tabela: "IdentityDirectoryEvents"
+  tags: ["identidade", "active directory", "ad cs"]
+  mitre:
+    - { tatica: "TA0006", tecnica: "T1649", nome: "Steal or Forge Authentication Certificates" }
+  query: |
+    IdentityDirectoryEvents
+    | where Timestamp > ago(7d)
+    | where Protocol == "Adcs"
+    | summarize Events = count(), LastSeen = max(Timestamp) by ActionType, AccountUpn, DeviceName
+    | order by Events desc
+- id: "adcs-pedidos-certificado-sentinel"
+  titulo: "Pedidos e emissões de certificado por servidor AD CS"
+  title_en: "Certificate requests and issuance per AD CS server"
+  descricao: "Conta por dia e por servidor os pedidos recebidos (4886), os certificados emitidos (4887) e os pedidos negados (4888). Exige a auditoria da CA habilitada e a coleta do conjunto Common ou superior."
+  desc_en: "Counts per day and per server the requests received (4886), certificates issued (4887) and requests denied (4888). Requires CA auditing enabled and collection of the Common event set or higher."
+  produto: "Sentinel"
+  tabela: "SecurityEvent"
+  tags: ["identidade", "active directory", "ad cs"]
+  mitre:
+    - { tatica: "TA0006", tecnica: "T1649", nome: "Steal or Forge Authentication Certificates" }
+  query: |
+    SecurityEvent
+    | where TimeGenerated > ago(7d)
+    | where EventID in (4886, 4887, 4888)
+    | summarize Requests = countif(EventID == 4886),
+                Issued = countif(EventID == 4887),
+                Denied = countif(EventID == 4888)
+        by Computer, bin(TimeGenerated, 1d)
+    | order by TimeGenerated desc
