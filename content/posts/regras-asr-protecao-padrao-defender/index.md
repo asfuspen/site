@@ -68,7 +68,7 @@ Um cuidado ao copiar exemplos: no exemplo de `Set-MpPreference` da página de co
 
 Para as outras regras, o guia de teste recomenda começar por um anel inicial pequeno de dispositivos e, normalmente, ativar todas as regras em modo auditoria ao mesmo tempo. Os passos do guia são: testar em auditoria, revisar os dados e avaliar o impacto, e então configurar as exclusões necessárias.
 
-<!-- Alessandro: acrescente aqui sua experiência com o tamanho do grupo piloto e o tempo de auditoria que costuma usar. -->
+Nos ambientes corporativos que administro, as regras ASR estão hoje em modo auditoria. O avanço para bloqueio ficou parado por causa de outras demandas, o que mostra um risco comum: a auditoria só protege quando alguém revisa os eventos e decide o próximo passo.
 
 ## Passo 3: medir o impacto com KQL
 
