@@ -68,7 +68,7 @@ A word of caution when copying examples: in the `Set-MpPreference` example on th
 
 For the remaining rules, the test guide recommends starting with a small initial ring of devices and typically enabling all rules in audit mode at the same time. The guide's steps are: test in audit mode, review the data and assess impact, then configure the exclusions you need.
 
-<!-- Alessandro: add your experience here with pilot group size and how long you usually keep rules in audit mode. -->
+In the corporate environments I manage, ASR rules are currently in audit mode. Moving them to block has stalled because of other priorities, which shows a common risk: audit mode only protects when someone reviews the events and decides the next step.
 
 ## Step 3: measure impact with KQL
 
