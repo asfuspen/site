@@ -1,77 +1,53 @@
 {{ define "main" }}
 {{ $posts := where site.RegularPages "Section" "posts" }}
-{{ $featured := index (where $posts "Params.featured" true) 0 | default (index $posts 0) }}
 {{ $np := len (hugo.Data.palestras | default slice) }}{{ $nj := len (hugo.Data.projetos | default slice) }}{{ $nk := len (hugo.Data.kql | default dict) }}
-<section class="hero" data-spot>
-  <canvas class="net" aria-hidden="true"></canvas>
-  <div class="wrap hero-grid">
-    <div class="hero-text">
-      <p class="eyebrow mono"><i class="dot"></i> {{ site.Params.headline }}</p>
-      <h1><span class="grad">{{ site.Params.author }}</span></h1>
+{{ $verbs := split (T "hero_verbs") "|" }}
+<section class="hero">
+  <div class="wrap">
+    <div class="board">
+      <p class="board-label mono">{{ site.Params.headline }}</p>
+      <div class="flap" data-flap="{{ T "hero_verbs" }}" role="img" aria-label="{{ delimit $verbs " " }}">{{ range split (printf "%-9s" (index $verbs 0)) "" }}<span>{{ . }}</span>{{ end }}</div>
+      <h1>{{ T "hero_title" }} <em>{{ T "hero_title_em" }}</em></h1>
       <div class="lead">{{ .Content }}</div>
-      <ul class="chips">
-        {{ range hugo.Data.areas }}<li>{{ .nome }}</li>{{ end }}<li>Zero Trust</li>
-      </ul>
       <div class="cta">
         <a class="btn primary" href="{{ "posts/" | relLangURL }}">{{ T "read_blog" }} {{ partial "icon.html" "arrow" }}</a>
-        <a class="btn" href="{{ "sobre/" | relLangURL }}">{{ T "about_me" }}</a>
+        {{ if gt $nk 0 }}<a class="btn" href="{{ "kql/" | relLangURL }}">{{ T "kql_open" }}</a>{{ end }}
         {{ partial "social.html" . }}
-      </div>
-    </div>
-    <div class="term" aria-label="{{ T "terminal_label" }}">
-      <div class="term-bar"><i></i><i></i><i></i><span class="mono">alessandro@sec: ~</span><span class="mono term-hint">{{ T "terminal_hint" }}</span></div>
-      <div class="term-body mono" data-terminal>
-        <p class="cmd"><span class="ps">$</span> <span data-type>whoami</span></p>
-        <p class="out">{{ site.Params.author }}, {{ site.Params.headline | lower }}</p>
-        <p class="cmd"><span class="ps">$</span> <span data-type>cat foco.txt</span></p>
-        <p class="out">{{ range $i, $a := hugo.Data.areas }}{{ if $i }} · {{ end }}{{ $a.nome }}{{ end }}</p>
-        <p class="cmd"><span class="ps">$</span> <span data-type>ls -t posts/ | head -3</span></p>
-        {{ range first 3 $posts }}
-        <p class="out"><a href="{{ .RelPermalink }}">{{ .Title }}</a></p>
-        {{ else }}
-        <p class="out">{{ T "soon" }}</p>
-        {{ end }}
-        <p class="cmd"><span class="ps">$</span> <span data-type>wc -l kql/*.kql</span></p>
-        <p class="out"><a href="{{ "kql/" | relLangURL }}">{{ $nk }} {{ T "stat_kql" }}</a></p>
-        <p class="out tip">{{ T "terminal_tip" }}</p>
-        <form class="cmd term-form" data-term-form data-who="{{ site.Params.author }}, {{ site.Params.headline | lower }}" autocomplete="off">
-          <label class="ps" for="term-in">$</label>
-          <input id="term-in" type="text" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="{{ T "terminal_input" }}" placeholder="help">
-        </form>
       </div>
     </div>
   </div>
 </section>
 
-{{ if ge (len $posts) 5 }}
-<section class="stats">
-  <div class="wrap stats-grid">
-    <a class="stat" href="{{ "posts/" | relLangURL }}"><b data-count="{{ len $posts }}">{{ len $posts }}</b><span>{{ cond (eq (len $posts) 1) (T "stat_posts_one") (T "stat_posts") }}</span></a>
-    {{ if gt $nk 0 }}<a class="stat" href="{{ "kql/" | relLangURL }}"><b data-count="{{ $nk }}">{{ $nk }}</b><span>{{ T "stat_kql" }}</span></a>{{ end }}
-    {{ if gt $np 0 }}<a class="stat" href="{{ "palestras/" | relLangURL }}"><b data-count="{{ $np }}">{{ $np }}</b><span>{{ T "stat_talks" }}</span></a>{{ end }}
-    {{ if gt $nj 0 }}<a class="stat" href="{{ "projetos/" | relLangURL }}"><b data-count="{{ $nj }}">{{ $nj }}</b><span>{{ cond (eq $nj 1) (T "stat_projects_one") (T "stat_projects") }}</span></a>{{ end }}
-    <a class="stat" href="{{ "tags/" | relLangURL }}"><b data-count="{{ len site.Taxonomies.tags }}">{{ len site.Taxonomies.tags }}</b><span>{{ T "stat_tags" }}</span></a>
+{{ with $posts }}
+<section class="block tight">
+  <div class="wrap">
+    <div class="block-head">
+      <h2>{{ T "latest_title" }}</h2>
+      <a class="more" href="{{ "posts/" | relLangURL }}">{{ T "see_all" }} {{ partial "icon.html" "arrow" }}</a>
+    </div>
+    <ol class="rows">
+      <li class="rows-head mono" aria-hidden="true"><span>{{ T "col_date" }}</span><span>{{ T "col_topic" }}</span><span>{{ T "col_article" }}</span><span>{{ T "col_level" }}</span></li>
+      {{ range first 8 . }}
+      <li>
+        <time class="r-date mono" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_medium" }}</time>
+        <span class="r-cat mono">{{ index (.Params.categories | default (slice (T "article"))) 0 }}</span>
+        <a class="r-title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ with .Params.nivel }}<span class="r-level mono level level-{{ . }}">{{ T (printf "level_%s" .) }}</span>{{ end }}
+      </li>
+      {{ end }}
+    </ol>
   </div>
 </section>
 {{ end }}
 
-{{ with $featured }}
-<section class="block">
-  <div class="wrap">
-    <div class="block-head">
-      <div>
-        <p class="eyebrow mono">{{ T "eyebrow_latest" }}</p>
-        <h2>{{ T "latest_title" }}</h2>
-      </div>
-      <a class="more" href="{{ "posts/" | relLangURL }}">{{ T "see_all" }} {{ partial "icon.html" "arrow" }}</a>
-    </div>
-    {{ partial "card.html" (dict "page" . "big" true) }}
-    {{ $rest := first 6 (complement (slice .) $posts) }}
-    {{ with $rest }}
-    <div class="grid after-big">
-      {{ range . }}{{ partial "card.html" (dict "page" .) }}{{ end }}
-    </div>
-    {{ end }}
+{{ if ge (len $posts) 5 }}
+<section class="stats">
+  <div class="wrap stats-grid">
+    <a class="stat" href="{{ "posts/" | relLangURL }}"><span class="dg" aria-hidden="true">{{ range split (printf "%02d" (len $posts)) "" }}<i>{{ . }}</i>{{ end }}</span><span><span class="sr-only">{{ len $posts }} </span>{{ cond (eq (len $posts) 1) (T "stat_posts_one") (T "stat_posts") }}</span></a>
+    {{ if gt $nk 0 }}<a class="stat" href="{{ "kql/" | relLangURL }}"><span class="dg" aria-hidden="true">{{ range split (printf "%02d" $nk) "" }}<i>{{ . }}</i>{{ end }}</span><span><span class="sr-only">{{ $nk }} </span>{{ T "stat_kql" }}</span></a>{{ end }}
+    {{ if gt $np 0 }}<a class="stat" href="{{ "palestras/" | relLangURL }}"><span class="dg" aria-hidden="true">{{ range split (printf "%02d" $np) "" }}<i>{{ . }}</i>{{ end }}</span><span><span class="sr-only">{{ $np }} </span>{{ T "stat_talks" }}</span></a>{{ end }}
+    {{ if gt $nj 0 }}<a class="stat" href="{{ "projetos/" | relLangURL }}"><span class="dg" aria-hidden="true">{{ range split (printf "%02d" $nj) "" }}<i>{{ . }}</i>{{ end }}</span><span><span class="sr-only">{{ $nj }} </span>{{ cond (eq $nj 1) (T "stat_projects_one") (T "stat_projects") }}</span></a>{{ end }}
+    <a class="stat" href="{{ "tags/" | relLangURL }}"><span class="dg" aria-hidden="true">{{ range split (printf "%02d" (len site.Taxonomies.tags)) "" }}<i>{{ . }}</i>{{ end }}</span><span><span class="sr-only">{{ len site.Taxonomies.tags }} </span>{{ T "stat_tags" }}</span></a>
   </div>
 </section>
 {{ end }}
