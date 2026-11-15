@@ -4,6 +4,8 @@ title = "Alessandro Ferreira"
 defaultContentLanguage = "pt-br"
 defaultContentLanguageInSubdir = false
 enableRobotsTXT = true
+# Data de atualização dos artigos vem do histórico do Git (os workflows fazem checkout completo).
+enableGitInfo = true
 summaryLength = 30
 timeZone = "America/Sao_Paulo"
 
