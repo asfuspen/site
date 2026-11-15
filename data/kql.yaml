@@ -301,4 +301,19 @@
                 Issued = countif(EventID == 4887),
                 Denied = countif(EventID == 4888)
         by Computer, bin(TimeGenerated, 1d)
+- id: "login-conta-emergencia"
+  titulo: "Login de conta de acesso de emergência"
+  title_en: "Emergency access account sign-in"
+  descricao: "Lista logins interativos e não interativos, com sucesso ou falha, das contas de acesso de emergência (break-glass), filtrando pelo Object ID. Feita para virar alerta crítico com limite maior que zero."
+  desc_en: "Lists interactive and non-interactive sign-ins, successful or failed, by emergency access (break-glass) accounts, filtered by Object ID. Built to become a critical alert with a greater-than-zero threshold."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "entra id", "contas privilegiadas"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1078.004", nome: "Cloud Accounts" }
+  query: |
+    let BreakGlassIds = dynamic(["00aa00aa-bb11-cc22-dd33-44ee44ee44ee", "11bb11bb-cc22-dd33-ee44-55ff55ff55ff"]);
+    union withsource = SourceTable SigninLogs, AADNonInteractiveUserSignInLogs
+    | where UserId in (BreakGlassIds)
+    | project TimeGenerated, SourceTable, UserPrincipalName, UserId, AppDisplayName, IPAddress, ResultType
     | order by TimeGenerated desc
