@@ -1,5 +1,6 @@
 id: "novos-membros-em-funcoes"
 ordem: 5
+data: 2026-11-12
 titulo: "Novos membros em funções administrativas"
 title_en: "New members added to admin roles"
 descricao: "Audita quem adicionou quem a uma função do Entra ID nos últimos 7 dias."

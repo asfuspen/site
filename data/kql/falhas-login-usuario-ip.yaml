@@ -1,5 +1,6 @@
 id: "falhas-login-usuario-ip"
 ordem: 1
+data: 2026-11-12
 titulo: "Falhas de login por usuário e IP"
 title_en: "Failed sign-ins by user and IP"
 descricao: "Lista as combinações de conta e endereço IP com mais falhas de autenticação nas últimas 24 horas."

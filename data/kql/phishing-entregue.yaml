@@ -1,5 +1,6 @@
 id: "phishing-entregue"
 ordem: 11
+data: 2026-11-12
 titulo: "Phishing entregue na caixa de entrada"
 title_en: "Phishing delivered to the inbox"
 descricao: "Conta as mensagens classificadas como phishing que mesmo assim foram entregues na caixa de entrada ou em uma pasta do usuário, por destinatário e domínio remetente."

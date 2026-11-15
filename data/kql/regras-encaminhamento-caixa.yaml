@@ -1,5 +1,6 @@
 id: "regras-encaminhamento-caixa"
 ordem: 6
+data: 2026-11-12
 titulo: "Regras de encaminhamento em caixas de correio"
 title_en: "Mailbox forwarding rules"
 descricao: "Detecta criação ou alteração de regras de caixa de entrada que encaminham ou redirecionam mensagens, técnica comum após comprometimento de conta."

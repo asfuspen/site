@@ -1,5 +1,7 @@
 id: "login-conta-emergencia"
 ordem: 17
+data: 2026-11-15
+post: "contas-acesso-emergencia-entra-id"
 titulo: "Login de conta de acesso de emergência"
 title_en: "Emergency access account sign-in"
 descricao: "Lista logins interativos e não interativos, com sucesso ou falha, das contas de acesso de emergência (break-glass), filtrando pelo Object ID. Feita para virar alerta crítico com limite maior que zero."

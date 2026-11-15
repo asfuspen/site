@@ -1,5 +1,6 @@
 id: "powershell-codificado"
 ordem: 9
+data: 2026-11-12
 titulo: "PowerShell com comando codificado"
 title_en: "PowerShell with encoded command"
 descricao: "Localiza execuções de PowerShell com comando em Base64, usado com frequência para ocultar a intenção do script."

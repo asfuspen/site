@@ -1,5 +1,7 @@
 id: "uso-codigo-dispositivo"
 ordem: 13
+data: 2026-11-13
+post: "phishing-codigo-dispositivo-entra-id"
 titulo: "Uso do fluxo de código de dispositivo por aplicativo"
 title_en: "Device code flow usage by application"
 descricao: "Mede, nos últimos 30 dias, quais aplicativos usam o fluxo de código de dispositivo, com logins, sucessos e usuários distintos, para planejar o bloqueio com Acesso Condicional."

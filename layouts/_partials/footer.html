@@ -1,13 +1,30 @@
 <footer class="site-footer">
   <div class="wrap foot">
-    <div>
+    <div class="foot-brand">
       <p class="foot-name">{{ site.Params.author }}</p>
       <p class="muted">{{ site.Params.headline }}</p>
+      {{ partial "social.html" . }}
     </div>
-    {{ partial "social.html" . }}
+    <nav class="foot-col" aria-label="{{ T "foot_content" }}">
+      <p class="mono foot-title">{{ T "foot_content" }}</p>
+      <a href="{{ "posts/" | relLangURL }}">Blog</a>
+      <a href="{{ "kql/" | relLangURL }}">{{ T "foot_kql" }}</a>
+      <a href="{{ "mitre/" | relLangURL }}">{{ T "foot_mitre" }}</a>
+      <a href="{{ "tags/" | relLangURL }}">{{ T "topics" }}</a>
+      {{ if site.Taxonomies.series }}<a href="{{ "series/" | relLangURL }}">{{ T "series" }}</a>{{ end }}
+    </nav>
+    <nav class="foot-col" aria-label="{{ T "foot_site" }}">
+      <p class="mono foot-title">{{ T "foot_site" }}</p>
+      {{ with site.GetPage "/sobre" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}
+      {{ if hugo.Data.palestras }}{{ with site.GetPage "/palestras" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}{{ end }}
+      {{ with site.GetPage "/projetos" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}
+      {{ with site.GetPage "/historico" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}
+      <a href="{{ "index.xml" | relLangURL }}">{{ T "foot_feed" }}</a>
+      <a href="https://github.com/asfuspen/site" target="_blank" rel="noopener">{{ T "foot_source" }}</a>
+    </nav>
   </div>
   <div class="wrap foot-meta">
     <span>© {{ now.Year }} {{ site.Params.author }}</span>
-    <span class="mono">{{ T "status" }}: <i class="dot"></i> {{ T "online" }}</span>
+    <a href="https://github.com/asfuspen/site/issues/new" target="_blank" rel="noopener">{{ T "feedback_report" }}</a>
   </div>
 </footer>

@@ -477,3 +477,31 @@
     });
   }, 2600);
 })();
+
+// Filtros do blog: nível e tema
+(function () {
+  var box = document.querySelector("[data-filter]");
+  if (!box) return;
+  var state = { level: "", cat: "" }, chips = box.querySelectorAll("[data-f]"), rows = box.querySelectorAll(".rows li"),
+    groups = box.querySelectorAll("[data-group]"), count = box.querySelector("[data-filter-count]"), empty = box.querySelector("[data-filter-empty]");
+  var apply = function () {
+    var n = 0;
+    rows.forEach(function (li) {
+      var ok = (!state.level || li.dataset.level === state.level) && (!state.cat || li.dataset.cat === state.cat);
+      li.hidden = !ok; if (ok) n++;
+    });
+    groups.forEach(function (g) { g.hidden = !g.querySelector(".rows li:not([hidden])"); });
+    if (count) count.textContent = n;
+    if (empty) empty.hidden = n > 0;
+  };
+  chips.forEach(function (c) {
+    c.addEventListener("click", function () {
+      state[c.dataset.f] = c.dataset.v;
+      chips.forEach(function (o) {
+        if (o.dataset.f !== c.dataset.f) return;
+        o.classList.toggle("on", o === c); o.setAttribute("aria-pressed", o === c ? "true" : "false");
+      });
+      apply();
+    });
+  });
+})();

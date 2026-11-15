@@ -1,5 +1,6 @@
 id: "office-iniciando-scripts"
 ordem: 10
+data: 2026-11-12
 titulo: "Aplicativos do Office iniciando interpretadores"
 title_en: "Office apps spawning script interpreters"
 descricao: "Mostra Word, Excel, PowerPoint ou Outlook iniciando shells e interpretadores de script, comportamento compatível com a abertura de um arquivo malicioso. A consulta não indica como o arquivo chegou ao usuário."

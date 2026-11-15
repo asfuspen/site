@@ -2,8 +2,14 @@
 {{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (cond (eq .Data.Plural "tags") (T "topic") (cond (eq .Data.Plural "series") (T "series_label" | lower) (T "category")))) "title" (printf "#%s" (.Title | lower))) }}
 <section class="block tight">
   <div class="wrap">
-    <h2 class="sr-only">{{ T "list_heading" }}</h2>
-    <div class="grid">{{ range .Pages.ByDate }}{{ partial "card.html" (dict "page" .) }}{{ end }}</div>
+    <h2 class="month-title mono">{{ len .Pages }} {{ cond (eq (len .Pages) 1) (T "kind_post") (T "term_posts") }}</h2>
+    <div class="grid">{{ range .Pages.ByDate.Reverse }}{{ partial "card.html" (dict "page" .) }}{{ end }}</div>
+    {{ if eq .Data.Plural "tags" }}
+    {{ with partial "kql-for-term.html" (.Title | lower) }}
+    <h2 class="month-title mono term-q">{{ len . }} {{ T "term_queries" }}</h2>
+    {{ partial "kql-rows.html" . }}
+    {{ end }}
+    {{ end }}
   </div>
 </section>
 {{ end }}

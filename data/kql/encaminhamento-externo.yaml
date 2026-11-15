@@ -1,5 +1,7 @@
 id: "encaminhamento-externo"
 ordem: 7
+data: 2026-11-13
+post: "regras-encaminhamento-email-exchange-online"
 titulo: "Encaminhamento de e-mail para fora da organização"
 title_en: "Email forwarding outside the organization"
 descricao: "Extrai o destino de regras de caixa de entrada e de encaminhamentos de caixa e mantém só os que ficam fora dos domínios informados em InternalDomains. Troque contoso.com pelos seus domínios."

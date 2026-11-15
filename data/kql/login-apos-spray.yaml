@@ -1,5 +1,7 @@
 id: "login-apos-spray"
 ordem: 3
+data: 2026-11-13
+post: "password-spray-kql-sentinel"
 titulo: "Logins concluídos ou barrados no MFA a partir de IPs com spray"
 title_en: "Sign-ins completed or stopped at MFA from spraying IPs"
 descricao: "Parte dos IPs com falhas em muitas contas e lista os logins desses IPs que tiveram sucesso ou pararam na exigência de MFA, para separar as contas que precisam de atenção imediata."

@@ -1,0 +1,7 @@
+{{- /* Consultas da biblioteca ligadas a um tema: produto, tabela ou tag igual ao termo. Recebe o termo em minúsculas. */ -}}
+{{- $t := . -}}
+{{- $out := slice -}}
+{{- range (partial "kql-list.html" .) -}}
+  {{- if or (eq (lower .produto) $t) (eq (lower .tabela) $t) (in (.tags | default slice) $t) -}}{{- $out = $out | append . -}}{{- end -}}
+{{- end -}}
+{{- return $out -}}

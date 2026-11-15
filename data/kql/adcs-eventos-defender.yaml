@@ -1,5 +1,7 @@
 id: "adcs-eventos-defender"
 ordem: 15
+data: 2026-11-14
+post: "abuso-certificados-ad-cs-esc1"
 titulo: "Eventos do AD CS vistos pelo sensor do Defender for Identity"
 title_en: "AD CS events seen by the Defender for Identity sensor"
 descricao: "Resume por tipo de evento, conta e dispositivo os eventos de emissão de certificado registrados pelo sensor instalado no servidor AD CS. Serve para conhecer o volume normal antes de procurar exceções."

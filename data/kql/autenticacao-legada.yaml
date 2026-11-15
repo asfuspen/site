@@ -1,5 +1,6 @@
 id: "autenticacao-legada"
 ordem: 4
+data: 2026-11-12
 titulo: "Logins por tipo de cliente, para achar autenticação legada"
 title_en: "Sign-ins by client app, to find legacy authentication"
 descricao: "Conta os logins bem-sucedidos por tipo de cliente. Procure no resultado os clientes de autenticação legada, como Exchange ActiveSync, IMAP4, POP3 e SMTP, candidatos a bloqueio por acesso condicional."

@@ -1,0 +1,25 @@
+{{ define "main" }}
+{{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (.Title | lower)) "title" .Title "lead" .Content) }}
+{{ $items := slice }}
+{{ range where site.RegularPages "Section" "posts" }}{{ $items = $items | append (dict "d" (.Date.Format "2006-01-02") "k" (T "kind_post") "t" .Title "u" .RelPermalink) }}{{ end }}
+{{ range where site.RegularPages "Section" "kql" }}{{ if not .Date.IsZero }}{{ $items = $items | append (dict "d" (.Date.Format "2006-01-02") "k" (T "kind_query") "t" .Title "u" .RelPermalink) }}{{ end }}{{ end }}
+{{ range hugo.Data.palestras }}{{ $items = $items | append (dict "d" ((time.AsTime .data).Format "2006-01-02") "k" (T "kind_talk") "t" (printf "%s (%s)" .titulo .evento) "u" (.video | default .slides | default ("palestras/" | relLangURL))) }}{{ end }}
+<section class="block tight">
+  <div class="wrap">
+    <p class="mono muted hist-total"><b>{{ len $items }}</b> {{ T "hist_total" }}</p>
+    {{ $month := "" }}
+    {{ range sort $items "d" "desc" }}
+    {{ $m := substr .d 0 7 }}
+    {{ if ne $m $month }}{{ if $month }}</ol>{{ end }}{{ $month = $m }}
+    <h2 class="month-title mono">{{ time.AsTime (printf "%s-01" $m) | time.Format "January 2006" }}</h2>
+    <ol class="rows hist">{{ end }}
+      <li>
+        <time class="r-date mono" datetime="{{ .d }}">{{ time.AsTime .d | time.Format ":date_medium" }}</time>
+        <span class="r-cat mono">{{ .k }}</span>
+        <a class="r-title" href="{{ .u }}">{{ .t }}</a>
+      </li>
+    {{ end }}
+    {{ if $month }}</ol>{{ end }}
+  </div>
+</section>
+{{ end }}

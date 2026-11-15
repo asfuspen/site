@@ -1,0 +1,52 @@
+{{ define "main" }}
+{{ $q := .Params.q }}
+{{ $post := false }}{{ with $q.post }}{{ with site.GetPage (printf "/posts/%s" .) }}{{ $post = . }}{{ end }}{{ end }}
+<article class="post query">
+  <header class="pagehead">
+    <div class="wrap">
+      <p class="eyebrow mono"><a href="{{ "kql/" | relLangURL }}">kql</a> / {{ $q.produto | lower }}</p>
+      <h1>{{ .Title }}</h1>
+      <p class="lead">{{ .Params.description }}</p>
+    </div>
+  </header>
+  <div class="wrap query-grid">
+    <div class="prose">
+      {{ .Content }}
+      <p class="kql-note mono">{{ T "kql_note" }}</p>
+      <div class="share mono">
+        <span>{{ T "share" }}</span>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ .Permalink | urlquery }}" target="_blank" rel="noopener">LinkedIn</a>
+        <button type="button" data-copy-link="{{ .Permalink }}">{{ T "copy_link" }}</button>
+      </div>
+    </div>
+    <aside class="sheet" aria-label="{{ T "sheet_query" }}">
+      <p class="mono sheet-title">{{ T "sheet_query" }}</p>
+      <dl>
+        <div><dt>{{ T "sheet_product" }}</dt><dd>{{ with site.GetPage (printf "/tags/%s" (urlize (lower $q.produto))) }}<a href="{{ .RelPermalink }}">{{ $q.produto }}</a>{{ else }}{{ $q.produto }}{{ end }}</dd></div>
+        <div><dt>{{ T "sheet_table" }}</dt><dd class="mono">{{ with index hugo.Data.tabelas $q.tabela }}<a href="{{ . }}" target="_blank" rel="noopener">{{ $q.tabela }}</a>{{ else }}{{ $q.tabela }}{{ end }}</dd></div>
+        {{ with $q.mitre }}
+        <div><dt>MITRE ATT&amp;CK</dt><dd class="sheet-techs">{{ range . }}<a class="mono tech" href="https://attack.mitre.org/techniques/{{ replace .tecnica "." "/" }}/" target="_blank" rel="noopener">{{ .tecnica }}</a><span>{{ .nome }}</span>{{ end }}</dd></div>
+        {{ end }}
+        {{ if not .Date.IsZero }}<div><dt>{{ T "sheet_published" }}</dt><dd><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_medium" }}</time></dd></div>{{ end }}
+        {{ with $post }}<div><dt>{{ T "sheet_explained" }}</dt><dd><a href="{{ .RelPermalink }}">{{ .Title }}</a></dd></div>{{ end }}
+        <div><dt>{{ T "sheet_source" }}</dt><dd><a href="https://github.com/asfuspen/site/blob/main/data/kql/{{ $q.id }}.yaml" target="_blank" rel="noopener">data/kql/{{ $q.id }}.yaml</a></dd></div>
+      </dl>
+    </aside>
+  </div>
+  {{ $others := slice }}
+  {{ range (partial "kql-list.html" .) }}
+    {{ if and (ne .id $q.id) (or (eq .tabela $q.tabela) (and $q.post (eq .post $q.post))) }}{{ $others = $others | append . }}{{ end }}
+  {{ end }}
+  {{ with $others }}
+  <section class="block">
+    <div class="wrap">
+      <div class="block-head">
+        <h2>{{ T "kql_related" }}</h2>
+        <a class="more" href="{{ "kql/" | relLangURL }}">{{ T "kql_open" }} {{ partial "icon.html" "arrow" }}</a>
+      </div>
+      {{ partial "kql-rows.html" (first 6 .) }}
+    </div>
+  </section>
+  {{ end }}
+</article>
+{{ end }}
