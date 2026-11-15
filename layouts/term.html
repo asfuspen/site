@@ -2,6 +2,7 @@
 {{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (cond (eq .Data.Plural "tags") (T "topic") (cond (eq .Data.Plural "series") (T "series_label" | lower) (T "category")))) "title" (printf "#%s" (.Title | lower))) }}
 <section class="block tight">
   <div class="wrap">
+    <h2 class="sr-only">{{ T "list_heading" }}</h2>
     <div class="grid">{{ range .Pages.ByDate }}{{ partial "card.html" (dict "page" .) }}{{ end }}</div>
   </div>
 </section>
