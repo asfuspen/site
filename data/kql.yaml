@@ -242,3 +242,63 @@
         SampleFiles = make_set(FileName, 5), SampleFolders = make_set(FolderPath, 5)
         by ActionType, InitiatingProcessFileName
     | order by Events desc
+- id: "uso-codigo-dispositivo"
+  titulo: "Uso do fluxo de código de dispositivo por aplicativo"
+  title_en: "Device code flow usage by application"
+  descricao: "Mede, nos últimos 30 dias, quais aplicativos usam o fluxo de código de dispositivo, com logins, sucessos e usuários distintos, para planejar o bloqueio com Acesso Condicional."
+  desc_en: "Measures which applications used the device code flow in the last 30 days, with sign-ins, successes and distinct users, to plan a Conditional Access block."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "entra id", "phishing"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1566.002", nome: "Spearphishing Link" }
+  query: |
+    SigninLogs
+    | where TimeGenerated > ago(30d)
+    | where AuthenticationProtocol == "deviceCode"
+    | summarize SignIns = count(), Successes = countif(ResultType == "0"),
+        Users = dcount(UserPrincipalName), FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated)
+        by AppDisplayName
+    | order by SignIns desc
+- id: "primeiro-uso-codigo-dispositivo"
+  titulo: "Primeiro login por código de dispositivo do usuário"
+  title_en: "User's first device code sign-in"
+  descricao: "Lista logins concluídos pelo fluxo de código de dispositivo nas últimas 24 horas de usuários que não usaram o fluxo nos 30 dias anteriores."
+  desc_en: "Lists sign-ins completed through the device code flow in the last 24 hours by users who did not use the flow in the previous 30 days."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "entra id", "phishing"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1566.002", nome: "Spearphishing Link" }
+    - { tatica: "TA0006", tecnica: "T1528", nome: "Steal Application Access Token" }
+  query: |
+    let Lookback = 30d;
+    let KnownUsers = SigninLogs
+        | where TimeGenerated between (ago(Lookback) .. ago(1d))
+        | where AuthenticationProtocol == "deviceCode"
+        | where ResultType == "0"
+        | distinct UserPrincipalName;
+    SigninLogs
+    | where TimeGenerated > ago(1d)
+    | where AuthenticationProtocol == "deviceCode"
+    | where ResultType == "0"
+    | where UserPrincipalName !in (KnownUsers)
+    | project TimeGenerated, UserPrincipalName, AppDisplayName, IPAddress,
+        RiskLevelDuringSignIn, ConditionalAccessStatus
+    | order by TimeGenerated desc
+- id: "login-conta-emergencia"
+  titulo: "Login de conta de acesso de emergência"
+  title_en: "Emergency access account sign-in"
+  descricao: "Lista logins interativos e não interativos, com sucesso ou falha, das contas de acesso de emergência (break-glass), filtrando pelo Object ID. Feita para virar alerta crítico com limite maior que zero."
+  desc_en: "Lists interactive and non-interactive sign-ins, successful or failed, by emergency access (break-glass) accounts, filtered by Object ID. Built to become a critical alert with a greater-than-zero threshold."
+  produto: "Sentinel"
+  tabela: "SigninLogs"
+  tags: ["identidade", "entra id", "contas privilegiadas"]
+  mitre:
+    - { tatica: "TA0001", tecnica: "T1078.004", nome: "Cloud Accounts" }
+  query: |
+    let BreakGlassIds = dynamic(["00aa00aa-bb11-cc22-dd33-44ee44ee44ee", "11bb11bb-cc22-dd33-ee44-55ff55ff55ff"]);
+    union withsource = SourceTable SigninLogs, AADNonInteractiveUserSignInLogs
+    | where UserId in (BreakGlassIds)
+    | project TimeGenerated, SourceTable, UserPrincipalName, UserId, AppDisplayName, IPAddress, ResultType
+    | order by TimeGenerated desc
