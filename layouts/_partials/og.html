@@ -6,7 +6,7 @@
 {{- $kicker := cond .IsHome site.Params.description (cond (eq .Section "posts") (printf "// blog · %s" (.Date | time.Format ":date_medium")) (printf "// %s" (.Section | default "site"))) -}}
 {{- $size := cond (gt (strings.RuneCount $title) 48) 58 72 -}}
 {{- $img := $base | images.Filter
-    (images.Text $title (dict "color" "#e8eef8" "size" $size "linespacing" 14 "x" 80 "y" 210 "font" $bold))
-    (images.Text (cond .IsHome "" $kicker) (dict "color" "#3df5c4" "size" 26 "x" 80 "y" 150 "font" $mono)) -}}
+    (images.Text $title (dict "color" "#f3f1ea" "size" $size "linespacing" 14 "x" 80 "y" 210 "font" $bold))
+    (images.Text (cond .IsHome "" $kicker) (dict "color" "#ffb000" "size" 26 "x" 80 "y" 150 "font" $mono)) -}}
 {{- $img = $img | resources.Copy (printf "og/%s.png" (.RelPermalink | crypto.MD5)) -}}
 {{- return $img -}}

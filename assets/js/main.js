@@ -271,7 +271,7 @@
     };
     var draw = function () {
       var light = root.dataset.theme === "light";
-      var rgb = light ? "7,134,107" : "61,245,196";
+      var rgb = light ? "134,87,0" : "255,176,0";
       ctx.clearRect(0, 0, w, h);
       for (var a = 0; a < pts.length; a++) {
         var p = pts[a];
@@ -456,4 +456,24 @@
       else if (e.key === "Tab") { e.preventDefault(); input.focus(); }
     });
   }
+})();
+
+// Painel de embarque: a palavra do topo troca entre os verbos, letra por letra
+(function () {
+  var flap = document.querySelector("[data-flap]");
+  if (!flap || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+  var words = flap.getAttribute("data-flap").split("|");
+  var cells = Array.prototype.slice.call(flap.children), i = 0;
+  if (words.length < 2) return;
+  setInterval(function () {
+    if (document.hidden) return;
+    i = (i + 1) % words.length;
+    var w = (words[i] + "         ").slice(0, cells.length);
+    cells.forEach(function (c, k) {
+      setTimeout(function () {
+        c.classList.remove("f"); void c.offsetWidth; c.classList.add("f");
+        setTimeout(function () { c.textContent = w.charAt(k); }, 170);
+      }, k * 55);
+    });
+  }, 2600);
 })();
