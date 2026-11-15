@@ -7,14 +7,14 @@
       <label class="kql-search">{{ partial "icon.html" "search" }}<input type="search" placeholder="{{ T "kql_filter" }}" aria-label="{{ T "kql_filter" }}"></label>
       <div class="kql-chips mono" role="group">
         <button type="button" class="on" data-prod="">{{ T "kql_all" }}</button>
-        {{ $prods := slice }}{{ range hugo.Data.kql }}{{ $prods = $prods | append .produto }}{{ end }}
+        {{ $prods := slice }}{{ range (partial "kql-list.html" .) }}{{ $prods = $prods | append .produto }}{{ end }}
         {{ range $prods | uniq }}<button type="button" data-prod="{{ . }}">{{ . }}</button>{{ end }}
       </div>
       <span class="mono muted"><b data-kql-count>{{ len hugo.Data.kql }}</b> {{ T "kql_count" }}</span>
     </div>
     <p class="kql-note mono">{{ T "kql_note" }}</p>
     <div class="kql-list">
-      {{ range hugo.Data.kql }}
+      {{ range (partial "kql-list.html" .) }}
       {{ $t := cond $en (.title_en | default .titulo) .titulo }}{{ $d := cond $en (.desc_en | default .descricao) .descricao }}
       <article class="kql reveal" id="{{ .id }}" data-prod="{{ .produto }}" data-text="{{ printf "%s %s %s %s %s" $t $d .produto .tabela (delimit (.tags | default slice) " ") | lower }}{{ range .mitre }} {{ .tecnica | lower }} {{ .nome | lower }}{{ end }}">
         <header>

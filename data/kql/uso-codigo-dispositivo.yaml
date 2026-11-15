@@ -1,0 +1,19 @@
+id: "uso-codigo-dispositivo"
+ordem: 13
+titulo: "Uso do fluxo de código de dispositivo por aplicativo"
+title_en: "Device code flow usage by application"
+descricao: "Mede, nos últimos 30 dias, quais aplicativos usam o fluxo de código de dispositivo, com logins, sucessos e usuários distintos, para planejar o bloqueio com Acesso Condicional."
+desc_en: "Measures which applications used the device code flow in the last 30 days, with sign-ins, successes and distinct users, to plan a Conditional Access block."
+produto: "Sentinel"
+tabela: "SigninLogs"
+tags: ["identidade", "entra id", "phishing"]
+mitre:
+  - { tatica: "TA0001", tecnica: "T1566.002", nome: "Spearphishing Link" }
+query: |
+  SigninLogs
+  | where TimeGenerated > ago(30d)
+  | where AuthenticationProtocol == "deviceCode"
+  | summarize SignIns = count(), Successes = countif(ResultType == "0"),
+      Users = dcount(UserPrincipalName), FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated)
+      by AppDisplayName
+  | order by SignIns desc

@@ -1,0 +1,17 @@
+id: "autenticacao-legada"
+ordem: 4
+titulo: "Logins por tipo de cliente, para achar autenticação legada"
+title_en: "Sign-ins by client app, to find legacy authentication"
+descricao: "Conta os logins bem-sucedidos por tipo de cliente. Procure no resultado os clientes de autenticação legada, como Exchange ActiveSync, IMAP4, POP3 e SMTP, candidatos a bloqueio por acesso condicional."
+desc_en: "Counts successful sign-ins by client app. Look in the result for legacy authentication clients such as Exchange ActiveSync, IMAP4, POP3 and SMTP, candidates for a Conditional Access block."
+produto: "Sentinel"
+tabela: "SigninLogs"
+tags: ["identidade", "acesso condicional"]
+mitre:
+  - { tatica: "TA0001", tecnica: "T1078", nome: "Valid Accounts" }
+query: |
+  SigninLogs
+  | where TimeGenerated > ago(7d)
+  | where ResultType == "0"
+  | summarize Logins = count(), Users = dcount(UserPrincipalName) by ClientAppUsed
+  | order by Logins desc

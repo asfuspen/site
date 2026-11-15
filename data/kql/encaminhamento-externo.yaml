@@ -1,0 +1,30 @@
+id: "encaminhamento-externo"
+ordem: 7
+titulo: "Encaminhamento de e-mail para fora da organização"
+title_en: "Email forwarding outside the organization"
+descricao: "Extrai o destino de regras de caixa de entrada e de encaminhamentos de caixa e mantém só os que ficam fora dos domínios informados em InternalDomains. Troque contoso.com pelos seus domínios."
+desc_en: "Extracts the destination of inbox rules and mailbox forwarding and keeps only those outside the domains listed in InternalDomains. Replace contoso.com with your domains."
+produto: "Sentinel"
+tabela: "OfficeActivity"
+tags: ["e-mail", "exfiltração"]
+mitre:
+  - { tatica: "TA0009", tecnica: "T1114.003", nome: "Email Forwarding Rule" }
+query: |
+  let InternalDomains = dynamic(["contoso.com"]);
+  OfficeActivity
+  | where TimeGenerated > ago(7d)
+  | where OfficeWorkload =~ "Exchange"
+  | where Operation in ("New-InboxRule", "Set-InboxRule", "Set-Mailbox")
+  | where Parameters has_any ("ForwardTo", "RedirectTo", "ForwardAsAttachmentTo", "ForwardingSmtpAddress")
+  | mv-apply Parameter = todynamic(Parameters) on (
+      summarize Parsed = make_bag(bag_pack(tostring(Parameter.Name), Parameter.Value))
+    )
+  | extend Destination = tolower(tostring(coalesce(
+      Parsed.ForwardTo, Parsed.RedirectTo, Parsed.ForwardAsAttachmentTo, Parsed.ForwardingSmtpAddress)))
+  | extend Destination = trim_start(@"smtp:", Destination)
+  | where isnotempty(Destination)
+  | mv-expand Target = split(Destination, ";") to typeof(string)
+  | extend TargetDomain = tostring(split(Target, "@")[1])
+  | where TargetDomain !in (InternalDomains)
+  | project TimeGenerated, UserId, ClientIP, Operation, Target, Parameters
+  | order by TimeGenerated desc

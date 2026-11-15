@@ -1,0 +1,17 @@
+id: "adcs-eventos-defender"
+ordem: 15
+titulo: "Eventos do AD CS vistos pelo sensor do Defender for Identity"
+title_en: "AD CS events seen by the Defender for Identity sensor"
+descricao: "Resume por tipo de evento, conta e dispositivo os eventos de emissão de certificado registrados pelo sensor instalado no servidor AD CS. Serve para conhecer o volume normal antes de procurar exceções."
+desc_en: "Summarizes by event type, account and device the certificate issuance events recorded by the sensor installed on the AD CS server. Useful to learn the normal volume before looking for exceptions."
+produto: "Defender XDR"
+tabela: "IdentityDirectoryEvents"
+tags: ["identidade", "active directory", "ad cs"]
+mitre:
+  - { tatica: "TA0006", tecnica: "T1649", nome: "Steal or Forge Authentication Certificates" }
+query: |
+  IdentityDirectoryEvents
+  | where Timestamp > ago(7d)
+  | where Protocol == "Adcs"
+  | summarize Events = count(), LastSeen = max(Timestamp) by ActionType, AccountUpn, DeviceName
+  | order by Events desc

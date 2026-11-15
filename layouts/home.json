@@ -6,7 +6,7 @@
   {{- $items = $items | append (dict "t" .Title "u" .RelPermalink "k" (T "kind_post") "c" "post" "s" (printf "%s %s %s" (.Params.summary | default "") (delimit (.Params.tags | default slice) " ") (delimit (.Params.categories | default slice) " "))) -}}
 {{- end -}}
 {{- $en := eq site.Language.Lang "en" -}}
-{{- range hugo.Data.kql -}}
+{{- range (partial "kql-list.html" .) -}}
   {{- $items = $items | append (dict "t" (cond $en (.title_en | default .titulo) .titulo) "u" (printf "%s#%s" ("kql/" | relLangURL) .id) "k" (T "kind_kql") "c" "kql" "s" (printf "%s %s %s %s" .produto .tabela (delimit (.tags | default slice) " ") (delimit (apply (.mitre | default slice) "index" "." "tecnica") " "))) -}}
 {{- end -}}
 {{- range site.Taxonomies.tags -}}

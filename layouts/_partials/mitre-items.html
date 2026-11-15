@@ -1,7 +1,7 @@
 {{- /* Devolve os itens (consultas e posts) mapeados para o ATT&CK no idioma atual. */ -}}
 {{- $en := eq site.Language.Lang "en" -}}
 {{- $items := slice -}}
-{{- range hugo.Data.kql -}}
+{{- range (partial "kql-list.html" .) -}}
   {{- $q := . -}}
   {{- range .mitre -}}
     {{- $items = $items | append (dict "tatica" .tatica "tecnica" .tecnica "nome" .nome "titulo" (cond $en ($q.title_en | default $q.titulo) $q.titulo) "url" (printf "%s#%s" ("kql/" | relLangURL) $q.id) "tipo" "kql") -}}
