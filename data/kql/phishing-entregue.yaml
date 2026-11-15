@@ -1,0 +1,19 @@
+id: "phishing-entregue"
+ordem: 11
+titulo: "Phishing entregue na caixa de entrada"
+title_en: "Phishing delivered to the inbox"
+descricao: "Conta as mensagens classificadas como phishing que mesmo assim foram entregues na caixa de entrada ou em uma pasta do usuário, por destinatário e domínio remetente."
+desc_en: "Counts messages classified as phishing that were still delivered to the inbox or a user folder, by recipient and sender domain."
+produto: "Defender XDR"
+tabela: "EmailEvents"
+tags: ["e-mail", "phishing"]
+mitre:
+  - { tatica: "TA0001", tecnica: "T1566", nome: "Phishing" }
+query: |
+  EmailEvents
+  | where Timestamp > ago(7d)
+  | where ThreatTypes has "Phish"
+  | where DeliveryAction == "Delivered"
+  | where DeliveryLocation == "Inbox/Folder"
+  | summarize Messages = count() by RecipientEmailAddress, SenderFromDomain
+  | order by Messages desc

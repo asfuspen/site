@@ -1,0 +1,18 @@
+id: "office-iniciando-scripts"
+ordem: 10
+titulo: "Aplicativos do Office iniciando interpretadores"
+title_en: "Office apps spawning script interpreters"
+descricao: "Mostra Word, Excel, PowerPoint ou Outlook iniciando shells e interpretadores de script, comportamento compatível com a abertura de um arquivo malicioso. A consulta não indica como o arquivo chegou ao usuário."
+desc_en: "Shows Word, Excel, PowerPoint or Outlook launching shells and script interpreters, behavior consistent with a malicious file being opened. The query does not show how the file reached the user."
+produto: "Defender XDR"
+tabela: "DeviceProcessEvents"
+tags: ["endpoint", "execução"]
+mitre:
+  - { tatica: "TA0002", tecnica: "T1204.002", nome: "Malicious File" }
+query: |
+  DeviceProcessEvents
+  | where Timestamp > ago(7d)
+  | where InitiatingProcessFileName in~ ("winword.exe", "excel.exe", "powerpnt.exe", "outlook.exe")
+  | where FileName in~ ("powershell.exe", "cmd.exe", "wscript.exe", "cscript.exe", "mshta.exe")
+  | project Timestamp, DeviceName, AccountName, InitiatingProcessFileName, FileName, ProcessCommandLine
+  | order by Timestamp desc

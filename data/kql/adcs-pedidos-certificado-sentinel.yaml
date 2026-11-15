@@ -1,0 +1,19 @@
+id: "adcs-pedidos-certificado-sentinel"
+ordem: 16
+titulo: "Pedidos e emissões de certificado por servidor AD CS"
+title_en: "Certificate requests and issuance per AD CS server"
+descricao: "Conta por dia e por servidor os pedidos recebidos (4886), os certificados emitidos (4887) e os pedidos negados (4888). Exige a auditoria da CA habilitada e a coleta do conjunto Common ou superior."
+desc_en: "Counts per day and per server the requests received (4886), certificates issued (4887) and requests denied (4888). Requires CA auditing enabled and collection of the Common event set or higher."
+produto: "Sentinel"
+tabela: "SecurityEvent"
+tags: ["identidade", "active directory", "ad cs"]
+mitre:
+  - { tatica: "TA0006", tecnica: "T1649", nome: "Steal or Forge Authentication Certificates" }
+query: |
+  SecurityEvent
+  | where TimeGenerated > ago(7d)
+  | where EventID in (4886, 4887, 4888)
+  | summarize Requests = countif(EventID == 4886),
+              Issued = countif(EventID == 4887),
+              Denied = countif(EventID == 4888)
+      by Computer, bin(TimeGenerated, 1d)

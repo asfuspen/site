@@ -1,0 +1,17 @@
+id: "falhas-login-usuario-ip"
+ordem: 1
+titulo: "Falhas de login por usuário e IP"
+title_en: "Failed sign-ins by user and IP"
+descricao: "Lista as combinações de conta e endereço IP com mais falhas de autenticação nas últimas 24 horas."
+desc_en: "Lists the account and IP address pairs with the most authentication failures in the last 24 hours."
+produto: "Sentinel"
+tabela: "SigninLogs"
+tags: ["identidade", "entra id"]
+mitre:
+  - { tatica: "TA0006", tecnica: "T1110", nome: "Brute Force" }
+query: |
+  SigninLogs
+  | where TimeGenerated > ago(24h)
+  | where ResultType != "0"
+  | summarize Failures = count() by UserPrincipalName, IPAddress
+  | top 20 by Failures desc

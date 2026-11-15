@@ -1,0 +1,4 @@
+{{- /* Biblioteca KQL: um arquivo por consulta em data/kql/, ordenado pelo campo ordem. */ -}}
+{{- $list := slice -}}
+{{- range $key, $item := hugo.Data.kql -}}{{- $list = $list | append $item -}}{{- end -}}
+{{- return (sort $list "ordem") -}}

@@ -1,0 +1,18 @@
+id: "regras-encaminhamento-caixa"
+ordem: 6
+titulo: "Regras de encaminhamento em caixas de correio"
+title_en: "Mailbox forwarding rules"
+descricao: "Detecta criação ou alteração de regras de caixa de entrada que encaminham ou redirecionam mensagens, técnica comum após comprometimento de conta."
+desc_en: "Detects inbox rules created or changed to forward or redirect messages, a common technique after account compromise."
+produto: "Sentinel"
+tabela: "OfficeActivity"
+tags: ["e-mail", "exfiltração"]
+mitre:
+  - { tatica: "TA0009", tecnica: "T1114.003", nome: "Email Forwarding Rule" }
+query: |
+  OfficeActivity
+  | where TimeGenerated > ago(7d)
+  | where Operation in ("New-InboxRule", "Set-InboxRule")
+  | where Parameters has_any ("ForwardTo", "RedirectTo")
+  | project TimeGenerated, UserId, ClientIP, Operation, Parameters
+  | order by TimeGenerated desc

@@ -1,7 +1,7 @@
 {{ define "main" }}
 {{ $posts := where site.RegularPages "Section" "posts" }}
 {{ $featured := index (where $posts "Params.featured" true) 0 | default (index $posts 0) }}
-{{ $np := len (hugo.Data.palestras | default slice) }}{{ $nj := len (hugo.Data.projetos | default slice) }}{{ $nk := len (hugo.Data.kql | default slice) }}
+{{ $np := len (hugo.Data.palestras | default slice) }}{{ $nj := len (hugo.Data.projetos | default slice) }}{{ $nk := len (hugo.Data.kql | default dict) }}
 <section class="hero" data-spot>
   <canvas class="net" aria-hidden="true"></canvas>
   <div class="wrap hero-grid">
@@ -102,7 +102,7 @@
         <p class="muted">{{ T "kql_teaser_text" }}</p>
         <div class="cta"><a class="btn primary" href="{{ "kql/" | relLangURL }}">{{ T "kql_open" }} {{ partial "icon.html" "arrow" }}</a></div>
       </div>
-      {{ with index hugo.Data.kql 1 }}
+      {{ with index (partial "kql-list.html" .) 1 }}
       <pre class="mono" aria-hidden="true"><code>{{ .query }}</code></pre>
       {{ end }}
     </div>

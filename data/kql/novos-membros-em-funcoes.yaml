@@ -1,0 +1,29 @@
+id: "novos-membros-em-funcoes"
+ordem: 5
+titulo: "Novos membros em funções administrativas"
+title_en: "New members added to admin roles"
+descricao: "Audita quem adicionou quem a uma função do Entra ID nos últimos 7 dias."
+desc_en: "Audits who added whom to an Entra ID role in the last 7 days."
+produto: "Sentinel"
+tabela: "AuditLogs"
+tags: ["identidade", "privilégio"]
+mitre:
+  - { tatica: "TA0003", tecnica: "T1098.003", nome: "Additional Cloud Roles" }
+  - { tatica: "TA0004", tecnica: "T1098.003", nome: "Additional Cloud Roles" }
+query: |
+  AuditLogs
+  | where TimeGenerated > ago(7d)
+  | where OperationName == "Add member to role"
+  | extend Actor = tostring(InitiatedBy.user.userPrincipalName)
+  | mv-apply Resource = TargetResources on (
+      where Resource.type in~ ("User", "ServicePrincipal")
+      | extend Target = iff(Resource.type =~ "ServicePrincipal",
+          tostring(Resource.displayName), tostring(Resource.userPrincipalName)),
+          Properties = Resource.modifiedProperties
+    )
+  | mv-apply Property = Properties on (
+      where Property.displayName =~ "Role.DisplayName"
+      | extend Role = trim('"', tostring(Property.newValue))
+    )
+  | project TimeGenerated, Actor, Target, Role, Result
+  | order by TimeGenerated desc
