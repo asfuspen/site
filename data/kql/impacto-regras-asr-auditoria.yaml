@@ -1,5 +1,7 @@
 id: "impacto-regras-asr-auditoria"
 ordem: 12
+data: 2026-11-14
+post: "regras-asr-protecao-padrao-defender"
 titulo: "Impacto das regras ASR em modo auditoria"
 title_en: "Impact of ASR rules in audit mode"
 descricao: "Agrupa os eventos de regras ASR em auditoria dos últimos 30 dias por regra e processo de origem, para decidir o que pode ir para bloqueio e o que precisa de exclusão."

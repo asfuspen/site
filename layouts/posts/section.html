@@ -1,0 +1,48 @@
+{{ define "main" }}
+{{ partial "pagehead.html" (dict "eyebrow" (printf "// %s" (.Title | lower)) "title" .Title "lead" .Content) }}
+{{ $pages := .RegularPages.ByDate.Reverse }}
+<section class="block tight">
+  <div class="wrap" data-filter>
+    {{ $levels := slice }}{{ $cats := slice }}
+    {{ range $pages }}{{ with .Params.nivel }}{{ $levels = $levels | append . }}{{ end }}{{ with index (.Params.categories | default slice) 0 }}{{ $cats = $cats | append . }}{{ end }}{{ end }}
+    <div class="filters">
+      <div class="kql-chips mono" role="group" aria-label="{{ T "col_level" }}">
+        <span class="filter-label">{{ T "col_level" }}</span>
+        <button type="button" class="on" data-f="level" data-v="" aria-pressed="true">{{ T "filter_all" }}</button>
+        {{ range slice "iniciante" "intermediario" "avancado" }}{{ if in $levels . }}<button type="button" data-f="level" data-v="{{ . }}" aria-pressed="false">{{ T (printf "level_%s" .) }}</button>{{ end }}{{ end }}
+      </div>
+      <div class="kql-chips mono" role="group" aria-label="{{ T "col_topic" }}">
+        <span class="filter-label">{{ T "col_topic" }}</span>
+        <button type="button" class="on" data-f="cat" data-v="" aria-pressed="true">{{ T "filter_all" }}</button>
+        {{ range sort ($cats | uniq) }}<button type="button" data-f="cat" data-v="{{ . }}" aria-pressed="false">{{ . }}</button>{{ end }}
+      </div>
+      <span class="mono muted"><b data-filter-count>{{ len $pages }}</b> {{ T "filter_count" }}</span>
+    </div>
+    {{ range $pages.GroupByDate "2006-01" }}
+    <div class="month" data-group>
+      <h2 class="month-title mono">{{ (index .Pages 0).Date | time.Format "January 2006" }}</h2>
+      <ol class="rows">
+        {{ range .Pages }}
+        <li data-level="{{ .Params.nivel }}" data-cat="{{ index (.Params.categories | default slice) 0 }}">
+          <time class="r-date mono" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_medium" }}</time>
+          <span class="r-cat mono">{{ index (.Params.categories | default (slice (T "article"))) 0 }}</span>
+          <a class="r-title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{ with .Params.nivel }}<span class="r-level mono level level-{{ . }}">{{ T (printf "level_%s" .) }}</span>{{ end }}
+          <p class="r-sum muted">{{ .Params.summary | default .Summary | plainify | truncate 170 }} <span class="mono">{{ .ReadingTime }} {{ T "min_read" }}</span></p>
+        </li>
+        {{ end }}
+      </ol>
+    </div>
+    {{ else }}
+    <p class="empty mono">{{ T "no_posts" }}</p>
+    {{ end }}
+    <p class="empty mono" data-filter-empty hidden>{{ T "filter_none" }}</p>
+    {{ with site.Taxonomies.series }}
+    <div class="series-list">
+      <h2 class="month-title mono">{{ T "series" }}</h2>
+      <ul class="tagcloud">{{ range .ByCount }}<li><a href="{{ .Page.RelPermalink }}">{{ .Page.Title }} <span>{{ .Count }}</span></a></li>{{ end }}</ul>
+    </div>
+    {{ end }}
+  </div>
+</section>
+{{ end }}

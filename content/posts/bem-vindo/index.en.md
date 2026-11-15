@@ -1,7 +1,7 @@
 ---
 title: "Welcome to the blog"
 date: 2026-11-12
-draft: false
+draft: true
 description: "Why this blog exists and what you will find here."
 summary: "Why this blog exists and what you will find here."
 categories: ["General"]

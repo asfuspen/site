@@ -4,7 +4,7 @@
 {{- range (partial "kql-list.html" .) -}}
   {{- $q := . -}}
   {{- range .mitre -}}
-    {{- $items = $items | append (dict "tatica" .tatica "tecnica" .tecnica "nome" .nome "titulo" (cond $en ($q.title_en | default $q.titulo) $q.titulo) "url" (printf "%s#%s" ("kql/" | relLangURL) $q.id) "tipo" "kql") -}}
+    {{- $items = $items | append (dict "tatica" .tatica "tecnica" .tecnica "nome" .nome "titulo" (cond $en ($q.title_en | default $q.titulo) $q.titulo) "url" (printf "%s%s/" ("kql/" | relLangURL) $q.id) "tipo" "kql") -}}
   {{- end -}}
 {{- end -}}
 {{- range where site.RegularPages "Section" "posts" -}}

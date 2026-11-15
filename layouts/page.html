@@ -28,6 +28,23 @@
       </aside>
       {{ end }}
       {{ end }}
+      {{ $slug := "" }}{{ with .File }}{{ $slug = path.Base .Dir }}{{ end }}
+      {{ $queries := where (partial "kql-list.html" .) "post" $slug }}
+      {{ $updated := and (not .Lastmod.IsZero) (gt (.Lastmod.Format "20060102") (.Date.Format "20060102")) }}
+      {{ if or .Params.mitre $queries $updated }}
+      <aside class="sheet sheet-post" aria-label="{{ T "sheet_post" }}">
+        <p class="mono sheet-title">{{ T "sheet_post" }}</p>
+        <dl>
+          {{ if $updated }}<div><dt>{{ T "sheet_updated" }}</dt><dd><time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod | time.Format ":date_medium" }}</time></dd></div>{{ end }}
+          {{ with .Params.mitre }}
+          <div><dt>MITRE ATT&amp;CK</dt><dd class="sheet-techs">{{ range . }}<a class="mono tech" href="https://attack.mitre.org/techniques/{{ replace .tecnica "." "/" }}/" target="_blank" rel="noopener">{{ .tecnica }}</a><span>{{ .nome }}</span>{{ end }}<a class="sheet-more mono" href="{{ "mitre/" | relLangURL }}">{{ T "mitre_open" }}</a></dd></div>
+          {{ end }}
+          {{ with $queries }}
+          <div><dt>{{ T "sheet_queries" }}</dt><dd>{{ partial "kql-rows.html" . }}</dd></div>
+          {{ end }}
+        </dl>
+      </aside>
+      {{ end }}
       {{ .Content }}
       {{ with .GetTerms "tags" }}
       <ul class="tagcloud small">
@@ -40,6 +57,9 @@
         <a href="https://wa.me/?text={{ printf "%s %s" .Title .Permalink | urlquery }}" target="_blank" rel="noopener">WhatsApp</a>
         <button type="button" data-copy-link="{{ .Permalink }}">{{ T "copy_link" }}</button>
       </div>
+      {{ with .File }}
+      <p class="feedback mono">{{ T "feedback_text" }} <a href="https://github.com/asfuspen/site/issues/new?title={{ printf "%s: %s" (T "feedback_issue") $cur.Title | urlquery }}" target="_blank" rel="noopener">{{ T "feedback_report" }}</a> <a href="https://github.com/asfuspen/site/commits/main/content/{{ .Path }}" target="_blank" rel="noopener">{{ T "feedback_history" }}</a></p>
+      {{ end }}
       <nav class="postnav" aria-label="{{ T "other_posts" }}">
         {{ with .PrevInSection }}<a href="{{ .RelPermalink }}"><span class="mono">{{ T "previous" }}</span>{{ .Title }}</a>{{ else }}<span></span>{{ end }}
         {{ with .NextInSection }}<a class="next" href="{{ .RelPermalink }}"><span class="mono">{{ T "next" }}</span>{{ .Title }}</a>{{ end }}

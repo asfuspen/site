@@ -1,7 +1,7 @@
 ---
 title: "Bem-vindo ao blog"
 date: 2026-11-12
-draft: false
+draft: true
 description: "Por que este blog existe e o que você vai encontrar por aqui."
 summary: "Por que este blog existe e o que você vai encontrar por aqui."
 categories: ["Geral"]

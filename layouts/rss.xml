@@ -1,0 +1,27 @@
+{{- /* Feed RSS. O feed principal traz só os artigos; a biblioteca KQL e os temas têm feeds próprios. */ -}}
+{{- $pages := .RegularPages -}}
+{{- if .IsHome -}}{{- $pages = where site.RegularPages "Section" "posts" -}}{{- end -}}
+{{- $pages = first 30 $pages.ByDate.Reverse -}}
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title }}{{ end }}</title>
+    <link>{{ .Permalink }}</link>
+    <description>{{ .Description | default site.Params.description }}</description>
+    <language>{{ site.Language.Locale }}</language>
+    {{- with (index $pages 0) }}{{ if not .Date.IsZero }}
+    <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>{{ end }}{{ end }}
+    {{- with .OutputFormats.Get "RSS" }}
+    {{ printf "<atom:link href=%q rel=\"self\" type=%q />" .Permalink .MediaType | safeHTML }}
+    {{- end }}
+    {{- range $pages }}
+    <item>
+      <title>{{ .Title }}</title>
+      <link>{{ .Permalink }}</link>
+      {{ if not .Date.IsZero }}<pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>{{ end }}
+      <guid>{{ .Permalink }}</guid>
+      <description>{{ .Params.summary | default .Summary | transform.XMLEscape | safeHTML }}</description>
+    </item>
+    {{- end }}
+  </channel>
+</rss>

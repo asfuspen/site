@@ -1,5 +1,7 @@
 id: "primeiro-uso-codigo-dispositivo"
 ordem: 14
+data: 2026-11-13
+post: "phishing-codigo-dispositivo-entra-id"
 titulo: "Primeiro login por código de dispositivo do usuário"
 title_en: "User's first device code sign-in"
 descricao: "Lista logins concluídos pelo fluxo de código de dispositivo nas últimas 24 horas de usuários que não usaram o fluxo nos 30 dias anteriores."

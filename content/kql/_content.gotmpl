@@ -1,0 +1,19 @@
+{{- /* Cria uma página por consulta da biblioteca, a partir de data/kql/<id>.yaml, nos dois idiomas. */ -}}
+{{- .EnableAllLanguages -}}
+{{- $en := eq .Site.Language.Lang "en" -}}
+{{- range $key, $q := hugo.Data.kql -}}
+  {{- $title := cond $en ($q.title_en | default $q.titulo) $q.titulo -}}
+  {{- $desc := cond $en ($q.desc_en | default $q.descricao) $q.descricao -}}
+  {{- $date := $q.data -}}
+  {{- if not $date -}}{{- with $q.ordem -}}{{- if gt (int .) 20000000 -}}{{- $s := string . -}}{{- $date = printf "%s-%s-%s" (substr $s 0 4) (substr $s 4 2) (substr $s 6 2) -}}{{- end -}}{{- end -}}{{- end -}}
+  {{- $body := printf "```kql\n%s\n```\n" (strings.TrimSpace $q.query) -}}
+  {{- $page := dict
+      "kind" "page"
+      "path" $q.id
+      "title" $title
+      "content" (dict "mediaType" "text/markdown" "value" $body)
+      "params" (dict "description" $desc "summary" $desc "q" $q)
+  -}}
+  {{- with $date -}}{{- $page = merge $page (dict "dates" (dict "date" (time.AsTime .))) -}}{{- end -}}
+  {{- $.AddPage $page -}}
+{{- end -}}

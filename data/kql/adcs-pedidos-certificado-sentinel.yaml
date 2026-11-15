@@ -1,5 +1,7 @@
 id: "adcs-pedidos-certificado-sentinel"
 ordem: 16
+data: 2026-11-14
+post: "abuso-certificados-ad-cs-esc1"
 titulo: "Pedidos e emissões de certificado por servidor AD CS"
 title_en: "Certificate requests and issuance per AD CS server"
 descricao: "Conta por dia e por servidor os pedidos recebidos (4886), os certificados emitidos (4887) e os pedidos negados (4888). Exige a auditoria da CA habilitada e a coleta do conjunto Common ou superior."

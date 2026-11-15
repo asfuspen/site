@@ -1,5 +1,7 @@
 id: "regras-que-escondem-mensagens"
 ordem: 8
+data: 2026-11-13
+post: "regras-encaminhamento-email-exchange-online"
 titulo: "Regras de caixa de entrada que escondem mensagens"
 title_en: "Inbox rules that hide messages"
 descricao: "Encontra regras que apagam, movem ou marcam mensagens como lidas e que filtram por palavras de alerta ou não têm filtro nenhum."

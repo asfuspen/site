@@ -58,11 +58,14 @@
     <h2>{{ T "areas_title" }}</h2>
     <div class="areas">
       {{ range hugo.Data.areas }}
-      <div class="area reveal">
+      {{ $term := false }}{{ with .tag }}{{ with site.GetPage (printf "/tags/%s" (urlize .)) }}{{ $term = . }}{{ end }}{{ end }}
+      {{ $nq := 0 }}{{ with .tag }}{{ $nq = len (partial "kql-for-term.html" .) }}{{ end }}
+      {{ if $term }}<a class="area reveal" href="{{ $term.RelPermalink }}">{{ else }}<div class="area reveal">{{ end }}
         <span class="area-ico">{{ partial "icon.html" .icone }}</span>
         <h3>{{ .nome }}</h3>
         <p>{{ index . site.Language.Lang | default .pt }}</p>
-      </div>
+        <p class="mono area-count">{{ if $term }}{{ len $term.Pages }} {{ cond (eq (len $term.Pages) 1) (T "kind_post") (T "term_posts") }}{{ if $nq }}, {{ $nq }} {{ T "term_queries" }}{{ end }}{{ else }}{{ T "soon" }}{{ end }}</p>
+      {{ if $term }}</a>{{ else }}</div>{{ end }}
       {{ end }}
     </div>
   </div>

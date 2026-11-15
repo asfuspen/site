@@ -1,0 +1,11 @@
+# Página de referência oficial de cada tabela usada na biblioteca KQL (conferidas no Microsoft Learn em 2026-11-15).
+# Só acrescente uma tabela depois de abrir a página e confirmar que ela existe.
+SigninLogs: "https://learn.microsoft.com/azure/azure-monitor/reference/tables/signinlogs"
+AADNonInteractiveUserSignInLogs: "https://learn.microsoft.com/azure/azure-monitor/reference/tables/aadnoninteractiveusersigninlogs"
+OfficeActivity: "https://learn.microsoft.com/azure/azure-monitor/reference/tables/officeactivity"
+SecurityEvent: "https://learn.microsoft.com/azure/azure-monitor/reference/tables/securityevent"
+AuditLogs: "https://learn.microsoft.com/azure/azure-monitor/reference/tables/auditlogs"
+DeviceProcessEvents: "https://learn.microsoft.com/defender-xdr/advanced-hunting-deviceprocessevents-table"
+DeviceEvents: "https://learn.microsoft.com/defender-xdr/advanced-hunting-deviceevents-table"
+EmailEvents: "https://learn.microsoft.com/defender-xdr/advanced-hunting-emailevents-table"
+IdentityDirectoryEvents: "https://learn.microsoft.com/defender-xdr/advanced-hunting-identitydirectoryevents-table"

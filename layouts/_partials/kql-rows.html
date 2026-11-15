@@ -1,0 +1,11 @@
+{{- /* Lista compacta de consultas, com link para a página de cada uma. Recebe uma lista de itens de data/kql. */ -}}
+{{- $en := eq site.Language.Lang "en" -}}
+<ul class="qrows">
+  {{- range . }}
+  {{- $p := site.GetPage (printf "/kql/%s" .id) }}
+  <li>
+    <a class="q-title" href="{{ with $p }}{{ .RelPermalink }}{{ else }}{{ printf "%s#%s" ("kql/" | relLangURL) .id }}{{ end }}">{{ cond $en (.title_en | default .titulo) .titulo }}</a>
+    <span class="mono q-meta">{{ .produto }} / {{ .tabela }}</span>
+  </li>
+  {{- end }}
+</ul>
