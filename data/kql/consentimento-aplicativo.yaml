@@ -1,0 +1,28 @@
+id: "consentimento-aplicativo"
+ordem: 20261116
+post: "consentimento-ilicito-aplicativos-entra-id"
+titulo: "Consentimento concedido a aplicativos"
+title_en: "Consent granted to applications"
+descricao: "Lista as atividades \"Consent to application\" no Entra ID com usuário, IP, aplicativo e tipo de consentimento, marcando as concessões válidas para o locatário inteiro (AllPrincipals). Ponto de partida para caçar consentimento ilícito."
+desc_en: "Lists \"Consent to application\" activity in Entra ID with user, IP, application and consent type, flagging tenant-wide grants (AllPrincipals). A starting point to hunt for illicit consent grants."
+produto: "Sentinel"
+tabela: "AuditLogs"
+tags: ["identidade", "entra id", "oauth"]
+mitre:
+  - { tatica: "TA0006", tecnica: "T1528", nome: "Steal Application Access Token" }
+query: |
+  AuditLogs
+  | where TimeGenerated > ago(7d)
+  | where OperationName has "Consent to application"
+  | extend InitiatedByUser = iff(isnotempty(tostring(InitiatedBy.user.userPrincipalName)),
+      tostring(InitiatedBy.user.userPrincipalName), tostring(InitiatedBy.app.displayName))
+  | extend IpAddress = tostring(InitiatedBy.user.ipAddress)
+  | mv-apply TargetResource = TargetResources on (
+      where TargetResource.type =~ "ServicePrincipal"
+      | extend AppName = tostring(TargetResource.displayName),
+               Props = tostring(TargetResource.modifiedProperties)
+    )
+  | parse Props with * "ConsentType: " ConsentType "]" *
+  | extend TenantWide = Props has "AllPrincipals"
+  | project TimeGenerated, InitiatedByUser, IpAddress, AppName, ConsentType, TenantWide, Result, CorrelationId
+  | order by TimeGenerated desc
