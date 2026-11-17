@@ -1,0 +1,24 @@
+id: "alteracoes-metodos-autenticacao"
+ordem: 20261117
+post: "registro-metodos-mfa-persistencia-entra-id"
+titulo: "Alterações de métodos de autenticação (MFA)"
+title_en: "Authentication method (MFA) changes"
+descricao: "Lista, nos últimos 7 dias, quem registrou, alterou ou removeu métodos de autenticação no Entra ID, de qual IP e para qual conta."
+desc_en: "Lists who registered, changed or removed authentication methods in Entra ID in the last 7 days, from which IP and for which account."
+produto: "Sentinel"
+tabela: "AuditLogs"
+tags: ["identidade", "entra id", "mfa"]
+mitre:
+  - { tatica: "TA0003", tecnica: "T1098.005", nome: "Device Registration" }
+  - { tatica: "TA0004", tecnica: "T1098.005", nome: "Device Registration" }
+query: |
+  AuditLogs
+  | where TimeGenerated > ago(7d)
+  | where OperationName in ("User registered security info", "User changed default security info",
+      "User deleted security info", "User updated security info",
+      "Admin registered security info", "Admin updated security info", "Admin deleted security info")
+  | extend Actor = coalesce(tostring(InitiatedBy.user.userPrincipalName), tostring(InitiatedBy.app.displayName)),
+      ActorIp = tostring(InitiatedBy.user.ipAddress),
+      TargetUser = tostring(TargetResources[0].userPrincipalName)
+  | project TimeGenerated, OperationName, Result, ResultReason, Actor, ActorIp, TargetUser, CorrelationId
+  | order by TimeGenerated desc

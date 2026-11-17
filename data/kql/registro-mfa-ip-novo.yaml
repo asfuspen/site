@@ -1,0 +1,30 @@
+id: "registro-mfa-ip-novo"
+ordem: 20261117
+post: "registro-metodos-mfa-persistencia-entra-id"
+titulo: "Registro de MFA a partir de IP novo para a conta"
+title_en: "MFA registration from an IP new to the account"
+descricao: "Mostra registros de métodos de autenticação feitos no último dia a partir de um IP que a conta não usou em logins com sucesso nos 30 dias anteriores."
+desc_en: "Shows authentication method registrations in the last day from an IP the account did not use in successful sign-ins over the previous 30 days."
+produto: "Sentinel"
+tabela: "AuditLogs"
+tags: ["identidade", "entra id", "mfa"]
+mitre:
+  - { tatica: "TA0003", tecnica: "T1098.005", nome: "Device Registration" }
+  - { tatica: "TA0004", tecnica: "T1098.005", nome: "Device Registration" }
+query: |
+  let lookback = 30d;
+  let window = 1d;
+  let Registrations = AuditLogs
+  | where TimeGenerated > ago(window)
+  | where OperationName == "User registered security info"
+  | extend TargetUser = tolower(tostring(TargetResources[0].userPrincipalName)),
+      IPAddress = tostring(InitiatedBy.user.ipAddress)
+  | where isnotempty(IPAddress)
+  | project TimeGenerated, TargetUser, IPAddress, ResultReason, CorrelationId;
+  let KnownIPs = SigninLogs
+  | where TimeGenerated between (ago(lookback) .. ago(window))
+  | where ResultType == "0"
+  | summarize by TargetUser = tolower(UserPrincipalName), IPAddress;
+  Registrations
+  | join kind=leftanti KnownIPs on TargetUser, IPAddress
+  | order by TimeGenerated desc
