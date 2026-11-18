@@ -1,0 +1,22 @@
+id: "recuperacao-senha-laps"
+ordem: 20261118
+post: "windows-laps-intune-entra-id"
+titulo: "Recuperações de senha do Windows LAPS por pessoa"
+title_en: "Windows LAPS password recoveries by actor"
+descricao: "Resume, por quem executou, as recuperações de senha de administrador local do Windows LAPS registradas no log de auditoria do Entra ID, com o número de dispositivos distintos. Útil para achar leituras em massa de senhas."
+desc_en: "Summarizes, by actor, the Windows LAPS local administrator password recoveries recorded in the Entra ID audit log, with the number of distinct devices. Useful to spot bulk password reads."
+produto: "Sentinel"
+tabela: "AuditLogs"
+tags: ["identidade", "endpoint", "contas privilegiadas"]
+mitre:
+  - { tatica: "TA0004", tecnica: "T1078.003", nome: "Local Accounts" }
+query: |
+  AuditLogs
+  | where TimeGenerated > ago(7d)
+  | where OperationName == "Recover device local administrator password"
+  | extend Actor = coalesce(tostring(InitiatedBy.user.userPrincipalName), tostring(InitiatedBy.app.displayName))
+  | mv-expand Target = TargetResources
+  | extend Device = tostring(Target.displayName)
+  | summarize Recoveries = count(), Devices = dcount(Device), DeviceList = make_set(Device, 50),
+      FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated) by Actor, Result
+  | order by Devices desc
